@@ -155,21 +155,21 @@ function getPossibleMoves(row, col, piece) {
       }
 
       if (piece === '♔' && !gameState.whiteKingMoved && row === 7 && col === 4) {
-        if (!gameState.whiteRookKingsideMoved && !currentBoard[7][5] && !currentBoard[7][6] &&
+        if (!gameState.whiteRookKingsideMoved && currentBoard[7][7] === '♖' && !currentBoard[7][5] && !currentBoard[7][6] &&
             !isSquareUnderAttack(7, 4, 'white') && !isSquareUnderAttack(7, 5, 'white') && !isSquareUnderAttack(7, 6, 'white')) {
           moves.push([7, 6]);
         }
-        if (!gameState.whiteRookQueensideMoved && !currentBoard[7][1] && !currentBoard[7][2] && !currentBoard[7][3] &&
+        if (!gameState.whiteRookQueensideMoved && currentBoard[7][0] === '♖' && !currentBoard[7][1] && !currentBoard[7][2] && !currentBoard[7][3] &&
             !isSquareUnderAttack(7, 4, 'white') && !isSquareUnderAttack(7, 3, 'white') && !isSquareUnderAttack(7, 2, 'white')) {
           moves.push([7, 2]);
         }
       }
       if (piece === '♚' && !gameState.blackKingMoved && row === 0 && col === 4) {
-        if (!gameState.blackRookKingsideMoved && !currentBoard[0][5] && !currentBoard[0][6] &&
+        if (!gameState.blackRookKingsideMoved && currentBoard[0][7] === '♜' && !currentBoard[0][5] && !currentBoard[0][6] &&
             !isSquareUnderAttack(0, 4, 'black') && !isSquareUnderAttack(0, 5, 'black') && !isSquareUnderAttack(0, 6, 'black')) {
           moves.push([0, 6]);
         }
-        if (!gameState.blackRookQueensideMoved && !currentBoard[0][1] && !currentBoard[0][2] && !currentBoard[0][3] &&
+        if (!gameState.blackRookQueensideMoved && currentBoard[0][0] === '♜' && !currentBoard[0][1] && !currentBoard[0][2] && !currentBoard[0][3] &&
             !isSquareUnderAttack(0, 4, 'black') && !isSquareUnderAttack(0, 3, 'black') && !isSquareUnderAttack(0, 2, 'black')) {
           moves.push([0, 2]);
         }
@@ -293,6 +293,19 @@ function wouldBeInCheck(fromRow, fromCol, toRow, toCol, color) {
   const originalPiece = currentBoard[toRow][toCol];
   const movingPiece = currentBoard[fromRow][fromCol];
 
+  // Identificar si es una captura al paso (en passant)
+  const isPawn = movingPiece === '♙' || movingPiece === '♟';
+  const isEnPassantCapture = isPawn && (toCol !== fromCol) && !originalPiece && 
+                             gameState.enPassantTarget && (toRow === gameState.enPassantTarget.row) && (toCol === gameState.enPassantTarget.col);
+                             
+  let enPassantCapturedPiece = null;
+  const enPassantRow = fromRow; // El peón capturado al paso está en la misma fila de origen del peón atacante
+
+  if (isEnPassantCapture) {
+    enPassantCapturedPiece = currentBoard[enPassantRow][toCol];
+    currentBoard[enPassantRow][toCol] = null; // Quitar temporalmente el peón capturado al paso
+  }
+
   currentBoard[toRow][toCol] = movingPiece;
   currentBoard[fromRow][fromCol] = null;
 
@@ -300,6 +313,11 @@ function wouldBeInCheck(fromRow, fromCol, toRow, toCol, color) {
 
   currentBoard[fromRow][fromCol] = movingPiece;
   currentBoard[toRow][toCol] = originalPiece;
+  
+  if (isEnPassantCapture) {
+    currentBoard[enPassantRow][toCol] = enPassantCapturedPiece; // Restaurar el peón capturado al paso
+  }
+  
   return inCheck;
 }
 
