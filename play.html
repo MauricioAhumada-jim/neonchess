@@ -163,36 +163,34 @@
     </div>
 
     <div class="modal" id="game-code-modal">
-      <div class="modal-content">
+      <div class="modal-content" style="max-width: 500px; width: 90%;">
         <h2>PARTIDA CREADA</h2>
-        <p style="color: #00ffff; text-align: center; margin: 15px 0;">Comparte este codigo con tu oponente:</p>
-        <div class="game-code-display">
+        <p style="color: #00ffff; text-align: center; margin: 15px 0; font-family: 'Orbitron', monospace; font-size: 0.95rem;">Comparte este código con tu oponente:</p>
+        <div class="game-code-display" style="margin: 20px 0;">
           <span id="game-code-text" data-testid="text-game-code">XXXXXX</span>
           <button class="copy-btn" onclick="copyGameCode()" data-testid="button-copy-code">Copiar</button>
         </div>
-        <p style="color: #888; text-align: center; font-size: 0.9em; margin-top: 15px;">Esperando a que tu oponente se una...</p>
-        <div class="spinner" style="margin: 15px auto;"></div>
-        <button class="back-btn" onclick="cancelPrivateGame()" data-testid="button-cancel-private">Cancelar</button>
+        <p style="color: #888; text-align: center; font-size: 0.85em; margin-top: 20px; font-family: 'Orbitron', monospace;">Esperando a que tu oponente se una...</p>
+        <div class="spinner" style="margin: 20px auto;"></div>
+        <button class="back-btn" onclick="cancelPrivateGame()" style="width: 100%; padding: 12px; font-family: 'Orbitron', monospace; font-weight: bold; margin-top: 10px;" data-testid="button-cancel-private">Cancelar</button>
       </div>
     </div>
 
     <div class="modal" id="join-game-modal">
-      <div class="modal-content">
+      <div class="modal-content" style="max-width: 500px; width: 90%;">
         <h2>UNIRSE A PARTIDA</h2>
-        <p style="color: #00ffff; text-align: center; margin: 15px 0;">Ingresa el codigo de la partida:</p>
-        <div class="join-code-input">
+        <p style="color: #00ffff; text-align: center; margin: 15px 0; font-family: 'Orbitron', monospace; font-size: 0.95rem;">Ingresa el código de la partida:</p>
+        <div class="join-code-input" style="margin: 20px 0;">
           <input type="text" id="join-code-input" maxlength="6" placeholder="CODIGO" data-testid="input-game-code" />
         </div>
-        <div class="join-error" id="join-error" style="color: #ff4444; text-align: center; margin: 10px 0; display: none;"></div>
-        <div class="join-actions">
-          <button class="lobby-btn lobby-btn-primary" onclick="joinPrivateGame()" data-testid="button-join-private">
-            <svg class="btn-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4M10 17l5-5-5-5M13.8 12H3"></path>
-            </svg>
-            <span class="btn-text">Unirse</span>
+        <div class="join-error" id="join-error" style="color: #ff4444; text-align: center; margin: 10px 0; display: none; font-family: 'Orbitron', monospace;"></div>
+        
+        <div class="join-actions" style="margin-top: 25px; display: flex; flex-direction: column; gap: 15px; width: 100%;">
+          <button class="mode-btn online" onclick="joinPrivateGame()" style="width: 100%;" data-testid="button-join-private">
+            <span class="mode-icon">&#x1F310;</span> Unirse
           </button>
+          <button class="back-btn" onclick="hideJoinGameModal()" style="width: 100%; padding: 12px; font-family: 'Orbitron', monospace; font-weight: bold;" data-testid="button-cancel-join">Cancelar</button>
         </div>
-        <button class="back-btn" onclick="hideJoinGameModal()" data-testid="button-cancel-join">Cancelar</button>
       </div>
     </div>
 
