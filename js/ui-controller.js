@@ -346,7 +346,21 @@ function showLoginModal() {
   const emailInput = document.getElementById('auth-email');
   const passwordInput = document.getElementById('auth-password');
   if (emailInput) emailInput.value = '';
-  if (passwordInput) passwordInput.value = '';
+  if (passwordInput) {
+    passwordInput.value = '';
+    passwordInput.type = 'password';
+  }
+  
+  // Restablecer icono de ojo a estado cerrado
+  const eyeBtn = document.getElementById('eye-icon-btn');
+  if (eyeBtn) {
+    eyeBtn.innerHTML = `
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 20px; height: 20px;">
+        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+        <circle cx="12" cy="12" r="3"></circle>
+      </svg>
+    `;
+  }
 }
 
 function hideLoginModal() {

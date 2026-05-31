@@ -78,7 +78,15 @@
           </div>
           <div class="input-group" style="margin-bottom: 20px;">
             <label for="auth-password">Contraseña</label>
-            <input type="password" id="auth-password" placeholder="••••••••" data-testid="input-password" required />
+            <div style="position: relative; display: flex; align-items: center; width: 100%;">
+              <input type="password" id="auth-password" placeholder="••••••••" data-testid="input-password" required style="width: 100%; padding-right: 45px;" />
+              <button id="eye-icon-btn" type="button" onclick="togglePasswordVisibility()" style="position: absolute; right: 12px; background: none; border: none; color: #00ffff; cursor: pointer; display: flex; align-items: center; justify-content: center; outline: none; padding: 0; filter: drop-shadow(0 0 5px rgba(0, 255, 255, 0.5)); transition: all 0.3s ease;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 20px; height: 20px;">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                  <circle cx="12" cy="12" r="3"></circle>
+                </svg>
+              </button>
+            </div>
           </div>
           <button id="btn-email-auth" class="mode-btn" onclick="handleEmailAuth()" style="width: 100%;" data-testid="button-email-submit">
             Iniciar Sesión
