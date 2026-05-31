@@ -835,9 +835,30 @@ body::before {
   border-radius: 20px;
   padding: 40px;
   max-width: 500px;
+  width: 90%;
+  max-height: 90vh;
+  overflow-y: auto;
   box-shadow: 0 0 40px rgba(0, 255, 255, 0.6),
     inset 0 0 30px rgba(0, 255, 255, 0.1);
   animation: scaleIn 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.game-mode-content::-webkit-scrollbar,
+.modal-content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.game-mode-content::-webkit-scrollbar-track,
+.modal-content::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 4px;
+}
+
+.game-mode-content::-webkit-scrollbar-thumb,
+.modal-content::-webkit-scrollbar-thumb {
+  background: #00ffff;
+  border-radius: 4px;
+  box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
 }
 
 .game-mode-content h2 {
@@ -2814,10 +2835,13 @@ body::before {
     gap: 10px;
   }
   
-  .modal-content {
+  .modal-content,
+  .game-mode-content {
     margin: 15px;
     padding: 20px;
     max-width: calc(100vw - 30px);
+    width: 90%;
+    max-height: 85vh;
   }
   
   .game-code-display {
