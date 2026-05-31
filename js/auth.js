@@ -53,6 +53,7 @@ function loginWithGoogle() {
   const auth = getAuth();
   
   if (!auth) {
+    alert('Firebase no está inicializado. Se iniciará en modo de demostración.');
     simulateGoogleLogin();
     return;
   }
@@ -66,9 +67,25 @@ function loginWithGoogle() {
     })
     .catch((error) => {
       console.error('Google login error:', error);
-      hideLoginModal();
-      simulateGoogleLogin();
+      
+      let message = 'Ocurrió un error al iniciar sesión con Google.';
+      if (error.code === 'auth/unauthorized-domain') {
+        message = 'Este dominio no está autorizado en la configuración de Firebase de este proyecto. Si eres el administrador, añade este dominio a la lista de dominios autorizados de Firebase.';
+      } else if (error.code === 'auth/popup-closed-by-user') {
+        message = 'El inicio de sesión fue cancelado (cerraste la ventana emergente).';
+      } else if (error.code === 'auth/cancelled-popup-request') {
+        message = 'La solicitud de inicio de sesión fue cancelada.';
+      } else if (error.message) {
+        message += '\nDetalle: ' + error.message;
+      }
+      
+      alert(message);
     });
+}
+
+function loginAsGuest() {
+  hideLoginModal();
+  simulateGoogleLogin();
 }
 
 function simulateGoogleLogin() {
@@ -187,6 +204,9 @@ function saveProfile() {
 
 function logout() {
   const auth = getAuth();
+  
+  // Limpiar sesión de invitado de la memoria local
+  localStorage.removeItem('neonchess_demo_uid');
   
   if (auth) {
     auth.signOut().then(() => {
