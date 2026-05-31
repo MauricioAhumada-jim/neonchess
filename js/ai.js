@@ -129,28 +129,52 @@ function getOnlyCaptureMoves(color) {
   return getAllPossibleMoves(color).filter(m => currentBoard[m.toRow][m.toCol] !== null);
 }
 
-function quiescenceSearch(alpha, beta, color = 'black') {
-  let standPat = evaluateBoard();
-  if (standPat >= beta) return beta;
-  if (alpha < standPat) alpha = standPat;
+function quiescenceSearch(alpha, beta, isMaximizing, color, qDepth = 0) {
+  const standPat = evaluateBoard();
+  
+  if (isMaximizing) {
+    if (standPat >= beta) return beta;
+    if (alpha < standPat) alpha = standPat;
+    
+    // Límite de seguridad en búsquedas quiescentes para evitar congelamiento
+    if (qDepth >= 3) return alpha;
 
-  const captureMoves = getOnlyCaptureMoves(color);
-  captureMoves.sort((a, b) => moveScoreForOrdering(b) - moveScoreForOrdering(a));
+    const captureMoves = getOnlyCaptureMoves(color);
+    captureMoves.sort((a, b) => moveScoreForOrdering(b) - moveScoreForOrdering(a));
 
-  for (let mv of captureMoves) {
-    simulateMoveObject(mv);
-    const score = -quiescenceSearch(-beta, -alpha, color === 'black' ? 'white' : 'black');
-    undoSimulatedMove();
+    for (let mv of captureMoves) {
+      simulateMoveObject(mv);
+      const score = quiescenceSearch(alpha, beta, false, 'white', qDepth + 1);
+      undoSimulatedMove();
 
-    if (score >= beta) return beta;
-    if (score > alpha) alpha = score;
+      if (score >= beta) return beta;
+      if (score > alpha) alpha = score;
+    }
+    return alpha;
+  } else {
+    if (standPat <= alpha) return alpha;
+    if (beta > standPat) beta = standPat;
+    
+    if (qDepth >= 3) return beta;
+
+    const captureMoves = getOnlyCaptureMoves(color);
+    captureMoves.sort((a, b) => moveScoreForOrdering(b) - moveScoreForOrdering(a));
+
+    for (let mv of captureMoves) {
+      simulateMoveObject(mv);
+      const score = quiescenceSearch(alpha, beta, true, 'black', qDepth + 1);
+      undoSimulatedMove();
+
+      if (score <= alpha) return alpha;
+      if (score < beta) beta = score;
+    }
+    return beta;
   }
-  return alpha;
 }
 
-function alphaBeta(depth, alpha, beta, maximizingPlayer, color, branchingLimit = 30) {
+function alphaBeta(depth, alpha, beta, isMaximizing, color, branchingLimit = 30) {
   if (depth === 0) {
-    return quiescenceSearch(alpha, beta, color);
+    return quiescenceSearch(alpha, beta, isMaximizing, color);
   }
 
   let moves = getAllPossibleMoves(color);
@@ -159,30 +183,33 @@ function alphaBeta(depth, alpha, beta, maximizingPlayer, color, branchingLimit =
   if (moves.length > branchingLimit) moves = moves.slice(0, branchingLimit);
 
   if (moves.length === 0) {
-    if (isInCheck(color)) return -9999;
-    return 0;
+    if (isInCheck(color)) {
+      // Priorizar jaques mate más cercanos (profundidades menores son preferibles para el mate rápido)
+      return isMaximizing ? -99999 + (3 - depth) : 99999 - (3 - depth);
+    }
+    return 0; // Tablas por ahogado
   }
 
-  if (color === 'black') {
+  if (isMaximizing) {
     let value = -Infinity;
     for (let mv of moves) {
       simulateMoveObject(mv);
-      const score = alphaBeta(depth - 1, -beta, -alpha, !maximizingPlayer, 'white', branchingLimit);
+      const score = alphaBeta(depth - 1, alpha, beta, false, 'white', branchingLimit);
       undoSimulatedMove();
-      if (score > value) value = score;
-      if (value > alpha) alpha = value;
-      if (alpha >= beta) break;
+      value = Math.max(value, score);
+      alpha = Math.max(alpha, value);
+      if (alpha >= beta) break; // Corte Beta
     }
     return value;
   } else {
     let value = Infinity;
     for (let mv of moves) {
       simulateMoveObject(mv);
-      const score = alphaBeta(depth - 1, -beta, -alpha, !maximizingPlayer, 'black', branchingLimit);
+      const score = alphaBeta(depth - 1, alpha, beta, true, 'black', branchingLimit);
       undoSimulatedMove();
-      if (score < value) value = score;
-      if (value < beta) beta = value;
-      if (alpha >= beta) break;
+      value = Math.min(value, score);
+      beta = Math.min(beta, value);
+      if (alpha >= beta) break; // Corte Alpha
     }
     return value;
   }
@@ -204,7 +231,7 @@ function aiMoveMedium(allMoves) {
   let bestScore = -Infinity;
   for (let mv of allMoves) {
     simulateMoveObject(mv);
-    const score = -evaluateBoard();
+    const score = evaluateBoard(); // Las negras (IA) quieren maximizar el puntaje
     undoSimulatedMove();
     if (score > bestScore) {
       bestScore = score;
@@ -220,7 +247,7 @@ function aiMoveHard(allMoves) {
   const depth = 2;
   for (let mv of allMoves) {
     simulateMoveObject(mv);
-    const score = -alphaBeta(depth - 1, -Infinity, Infinity, false, 'white', 40);
+    const score = alphaBeta(depth - 1, -Infinity, Infinity, false, 'white', 40); // Turno de blancas tras mover negras
     undoSimulatedMove();
     if (score > bestScore) {
       bestScore = score;
@@ -238,7 +265,7 @@ function aiMoveExtreme(allMoves) {
   const searchMoves = allMoves.slice(0, 80);
   for (let mv of searchMoves) {
     simulateMoveObject(mv);
-    const score = -alphaBeta(depth - 1, -99999, 99999, false, 'white', 60);
+    const score = alphaBeta(depth - 1, -Infinity, Infinity, false, 'white', 60);
     undoSimulatedMove();
     if (score > bestScore) {
       bestScore = score;
@@ -256,7 +283,7 @@ function wouldBeMaterialLossPostMove() {
       simulateMoveObject(m);
       const after = evaluateBoard();
       undoSimulatedMove();
-      if (after > cur + 0.9) return true;
+      if (after < cur - 0.9) return true; // Si el puntaje disminuye (blancas ganan material), hay pérdida para las negras
     }
   }
   return false;
