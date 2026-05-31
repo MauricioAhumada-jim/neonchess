@@ -3,6 +3,12 @@ let currentGameId = null;
 let playerColor = null;
 let opponentData = null;
 let opponentUid = null;
+let selectedTimeControl = 600; // 10 minutes default (in seconds)
+
+function updateSelectedTimeControl(value) {
+  selectedTimeControl = parseInt(value, 10);
+  console.log('Selected time control changed to:', selectedTimeControl, 'seconds');
+}
 
 function startMatchmaking() {
   const db = getDatabase();
@@ -22,9 +28,12 @@ function startMatchmaking() {
     return queueRef.once('value');
   }).then((snapshot) => {
     const queue = snapshot.val() || {};
-    const waitingPlayers = Object.keys(queue).filter(uid => uid !== user.uid);
+    // Only match players with the exact same selected time control
+    const waitingPlayers = Object.keys(queue).filter(uid => {
+      return uid !== user.uid && queue[uid].timeControl === selectedTimeControl;
+    });
     
-    console.log('Queue check:', waitingPlayers.length, 'players waiting');
+    console.log('Queue check for time', selectedTimeControl, ':', waitingPlayers.length, 'players waiting');
     
     if (waitingPlayers.length > 0) {
       const foundOpponentUid = waitingPlayers[0];
@@ -33,7 +42,7 @@ function startMatchmaking() {
       console.log('Found opponent:', foundOpponentUid);
       
       queueRef.child(foundOpponentUid).remove().then(() => {
-        createGame(user.uid, foundOpponentUid, profile, opponent);
+        createGame(user.uid, foundOpponentUid, profile, opponent, selectedTimeControl);
       });
     } else {
       console.log('No opponents, adding to queue');
@@ -45,6 +54,7 @@ function startMatchmaking() {
         wins: profile.wins || 0,
         losses: profile.losses || 0,
         draws: profile.draws || 0,
+        timeControl: selectedTimeControl,
         timestamp: firebase.database.ServerValue.TIMESTAMP
       });
       
@@ -69,7 +79,7 @@ function startMatchmaking() {
   });
 }
 
-function createGame(player1Uid, player2Uid, player1Profile, player2Data) {
+function createGame(player1Uid, player2Uid, player1Profile, player2Data, timeControl) {
   const db = getDatabase();
   if (!db) return;
   
@@ -103,6 +113,10 @@ function createGame(player1Uid, player2Uid, player1Profile, player2Data) {
       },
       [player2Uid]: player2Data
     },
+    timeControl: timeControl,
+    whiteTime: timeControl,
+    blackTime: timeControl,
+    lastTurnTimestamp: firebase.database.ServerValue.TIMESTAMP,
     currentTurn: 'white',
     board: null,
     moves: [],
@@ -144,7 +158,11 @@ function joinExistingGame(gameId, gameData) {
   opponentUid = playerColor === 'white' ? gameData.blackPlayer : gameData.whitePlayer;
   opponentData = gameData.playerData[opponentUid];
   
-  db.ref('games/' + gameId + '/status').set('active');
+  // Set both status to active and the starting timestamp using server time
+  db.ref('games/' + gameId).update({
+    status: 'active',
+    lastTurnTimestamp: firebase.database.ServerValue.TIMESTAMP
+  });
   
   hideWaitingModal();
   showOpponentFoundModal(opponentData, playerColor === 'white' ? 'black' : 'white');
@@ -312,6 +330,10 @@ function createPrivateGame() {
     privateCode: privateGameCode,
     hostUid: user.uid,
     status: 'waiting_private',
+    timeControl: selectedTimeControl,
+    whiteTime: selectedTimeControl,
+    blackTime: selectedTimeControl,
+    lastTurnTimestamp: firebase.database.ServerValue.TIMESTAMP,
     whitePlayer: null,
     blackPlayer: null,
     players: {
@@ -378,7 +400,8 @@ function startPrivateGameAsHost(guestUid, guestData) {
   privateGameRef.update({
     status: 'active',
     whitePlayer: hostIsWhite ? user.uid : guestUid,
-    blackPlayer: hostIsWhite ? guestUid : user.uid
+    blackPlayer: hostIsWhite ? guestUid : user.uid,
+    lastTurnTimestamp: firebase.database.ServerValue.TIMESTAMP
   }).then(() => {
     cleanupPrivateGameRefs();
     

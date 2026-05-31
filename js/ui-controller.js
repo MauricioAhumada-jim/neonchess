@@ -338,7 +338,11 @@ function closeCheckmateModal() {
   stopFireworks();
   
   const title = document.getElementById('checkmate-title');
-  if (title) title.textContent = 'JAQUE MATE';
+  if (title) {
+    title.textContent = 'JAQUE MATE';
+    title.style.color = '';
+    title.style.textShadow = '';
+  }
   
   if (gameMode === 'online') {
     endOnlineGame(true);
@@ -351,6 +355,12 @@ function closeCheckmateModalOnly() {
   const modal = document.getElementById('checkmate-modal');
   if (modal) modal.classList.remove('active');
   stopFireworks();
+  
+  const title = document.getElementById('checkmate-title');
+  if (title) {
+    title.style.color = '';
+    title.style.textShadow = '';
+  }
 }
 
 function showGameModeModal() {
@@ -517,6 +527,47 @@ function showOpponentAbandonedModal() {
   if (!modal || !winnerText) return;
   if (title) title.textContent = 'VICTORIA';
   winnerText.textContent = 'Tu oponente abandono la partida';
+  modal.classList.add('active');
+}
+
+function showGameEndModal(isWin, status) {
+  const modal = document.getElementById('checkmate-modal');
+  const winnerText = document.getElementById('checkmate-winner');
+  const title = document.getElementById('checkmate-title');
+  if (!modal || !winnerText) return;
+  
+  if (isWin) {
+    if (title) title.textContent = 'VICTORIA';
+    title.style.color = '#00ffff';
+    title.style.textShadow = '0 0 10px #00ffff, 0 0 20px #00ffff';
+    
+    if (status === 'timeout') {
+      winnerText.textContent = 'Victoria por tiempo';
+    } else if (status === 'resigned') {
+      winnerText.textContent = 'El oponente se ha rendido';
+    } else if (status === 'abandoned' || status === 'disconnected') {
+      winnerText.textContent = 'El oponente abandono la partida';
+    } else if (status === 'checkmate') {
+      winnerText.textContent = 'Victoria por Jaque Mate';
+    }
+    startFireworks();
+  } else {
+    if (title) title.textContent = 'DERROTA';
+    title.style.color = '#ff3333';
+    title.style.textShadow = '0 0 10px #ff3333, 0 0 20px #ff3333';
+    
+    if (status === 'timeout') {
+      winnerText.textContent = 'Derrota por tiempo';
+    } else if (status === 'resigned') {
+      winnerText.textContent = 'Te has rendido';
+    } else if (status === 'abandoned' || status === 'disconnected') {
+      winnerText.textContent = 'Has abandonado la partida';
+    } else if (status === 'checkmate') {
+      winnerText.textContent = 'Derrota por Jaque Mate';
+    }
+    stopFireworks();
+  }
+  
   modal.classList.add('active');
 }
 

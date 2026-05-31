@@ -137,6 +137,17 @@
           </div>
         </div>
         
+        <div class="input-group" style="margin-bottom: 20px; width: 100%;">
+          <label for="time-control-select" style="color: #00ffff; font-family: 'Orbitron', monospace; font-size: 0.9rem; text-shadow: 0 0 10px #00ffff; text-align: left; display: block; margin-bottom: 8px;">CONTROL DE TIEMPO</label>
+          <select id="time-control-select" onchange="updateSelectedTimeControl(this.value)" data-testid="select-time-control" style="width: 100%; padding: 12px; background: rgba(0, 0, 0, 0.8); border: 2px solid #00ffff; border-radius: 8px; color: #00ffff; font-family: 'Orbitron', monospace; font-size: 1rem; cursor: pointer; transition: all 0.3s ease; box-sizing: border-box; outline: none;">
+            <option value="60" style="background: #000; color: #00ffff;">1 Minuto (Bala)</option>
+            <option value="180" style="background: #000; color: #00ffff;">3 Minutos (Blitz)</option>
+            <option value="300" style="background: #000; color: #00ffff;">5 Minutos (Blitz)</option>
+            <option value="600" style="background: #000; color: #00ffff;" selected>10 Minutos (Rápido)</option>
+            <option value="1800" style="background: #000; color: #00ffff;">30 Minutos (Clásico)</option>
+          </select>
+        </div>
+
         <div class="mode-buttons" style="display: flex; flex-direction: column; gap: 15px; margin-bottom: 25px;">
           <button class="mode-btn online" onclick="startMatchmaking()" data-testid="button-find-match" style="width: 100%;">
             Buscar Partida
@@ -228,11 +239,14 @@
     <div class="game-container">
       <h1 class="title">NEON CHESS</h1>
       
-      <div class="game-header" id="game-header" style="display: none;">
-        <div class="player-display player-top" id="player-top">
-          <span class="player-flag-small" id="opponent-flag"></span>
-          <span class="player-name-small" id="opponent-name">Oponente</span>
-          <span class="player-stats-small" id="opponent-stats"></span>
+      <div class="game-header" id="game-header" style="display: none; width: 100%; max-width: 540px; margin: 0 auto;">
+        <div class="player-display player-top" id="player-top" style="display: flex; justify-content: space-between; align-items: center; width: 100%; box-sizing: border-box; border: 1px solid rgba(255, 0, 255, 0.3); border-radius: 8px; padding: 8px 16px; background: rgba(0, 0, 0, 0.5);">
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <span class="player-flag-small" id="opponent-flag"></span>
+            <span class="player-name-small" id="opponent-name" style="color: #ff00ff; text-shadow: 0 0 10px rgba(255, 0, 255, 0.5);">Oponente</span>
+            <span class="player-stats-small" id="opponent-stats"></span>
+          </div>
+          <div class="game-timer" id="opponent-timer" style="font-family: 'Orbitron', monospace; font-size: 1.2rem; font-weight: bold; color: #ff00ff; text-shadow: 0 0 10px rgba(255, 0, 255, 0.5); padding: 4px 12px; background: rgba(0,0,0,0.6); border: 2px solid rgba(255, 0, 255, 0.4); border-radius: 6px; min-width: 75px; text-align: center; display: none; box-shadow: 0 0 10px rgba(255,0,255,0.2);">--:--</div>
         </div>
       </div>
 
@@ -256,11 +270,14 @@
         </div>
       </div>
 
-      <div class="game-header" id="game-footer" style="display: none;">
-        <div class="player-display player-bottom" id="player-bottom">
-          <span class="player-flag-small" id="my-flag"></span>
-          <span class="player-name-small" id="my-name">Tu</span>
-          <span class="player-stats-small" id="my-stats"></span>
+      <div class="game-header" id="game-footer" style="display: none; width: 100%; max-width: 540px; margin: 0 auto;">
+        <div class="player-display player-bottom" id="player-bottom" style="display: flex; justify-content: space-between; align-items: center; width: 100%; box-sizing: border-box; border: 1px solid rgba(0, 255, 255, 0.3); border-radius: 8px; padding: 8px 16px; background: rgba(0, 0, 0, 0.5);">
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <span class="player-flag-small" id="my-flag"></span>
+            <span class="player-name-small" id="my-name" style="color: #00ffff; text-shadow: 0 0 10px rgba(0, 255, 255, 0.5);">Tu</span>
+            <span class="player-stats-small" id="my-stats"></span>
+          </div>
+          <div class="game-timer" id="my-timer" style="font-family: 'Orbitron', monospace; font-size: 1.2rem; font-weight: bold; color: #00ffff; text-shadow: 0 0 10px rgba(0, 255, 255, 0.5); padding: 4px 12px; background: rgba(0,0,0,0.6); border: 2px solid rgba(0, 255, 255, 0.4); border-radius: 6px; min-width: 75px; text-align: center; display: none; box-shadow: 0 0 10px rgba(0,255,255,0.2);">--:--</div>
         </div>
       </div>
 

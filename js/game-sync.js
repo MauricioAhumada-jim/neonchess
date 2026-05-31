@@ -4,6 +4,137 @@ let isApplyingOpponentMove = false;
 let hasRecordedOutcome = false;
 let gameMoves = [];
 
+// Chess Timer Global State
+let serverTimeOffset = 0;
+let whiteTimeLimit = 600;
+let blackTimeLimit = 600;
+let lastTurnTimestamp = 0;
+let gameTimeControl = 600;
+let timerIntervalId = null;
+let localOutcomeClaimed = false;
+
+function initServerTimeOffset() {
+  const db = getDatabase();
+  if (!db) return;
+  db.ref('.info/serverTimeOffset').on('value', (snapshot) => {
+    serverTimeOffset = snapshot.val() || 0;
+    console.log('Firebase server time offset:', serverTimeOffset);
+  });
+}
+
+function getSyncedTimestamp() {
+  return Date.now() + serverTimeOffset;
+}
+
+function startLocalTimer() {
+  if (timerIntervalId) return; // Already running
+  
+  // Show timer elements in UI
+  const myTimer = document.getElementById('my-timer');
+  const oppTimer = document.getElementById('opponent-timer');
+  if (myTimer) myTimer.style.display = 'block';
+  if (oppTimer) oppTimer.style.display = 'block';
+  
+  localOutcomeClaimed = false;
+  
+  timerIntervalId = setInterval(() => {
+    if (gameMode !== 'online' || !currentGameId) {
+      stopLocalTimer();
+      return;
+    }
+    
+    const now = getSyncedTimestamp();
+    const elapsedSeconds = Math.max(0, Math.floor((now - lastTurnTimestamp) / 1000));
+    
+    let whiteTimeRemaining = whiteTimeLimit;
+    let blackTimeRemaining = blackTimeLimit;
+    
+    if (currentPlayer === 'white') {
+      whiteTimeRemaining = Math.max(0, whiteTimeLimit - elapsedSeconds);
+    } else {
+      blackTimeRemaining = Math.max(0, blackTimeLimit - elapsedSeconds);
+    }
+    
+    // Update UI clocks
+    updateClockUI('white', whiteTimeRemaining);
+    updateClockUI('black', blackTimeRemaining);
+    
+    // Check for timeout
+    if (currentPlayer === 'white' && whiteTimeRemaining <= 0) {
+      handleTimeout('white');
+    } else if (currentPlayer === 'black' && blackTimeRemaining <= 0) {
+      handleTimeout('black');
+    }
+  }, 250);
+}
+
+function updateClockUI(color, seconds) {
+  const min = Math.floor(seconds / 60);
+  const sec = seconds % 60;
+  const timeString = `${min.toString().padStart(2, '0')}:${sec.toString().padStart(2, '0')}`;
+  
+  const myColor = getPlayerColor();
+  if (color === myColor) {
+    const el = document.getElementById('my-timer');
+    if (el) {
+      el.textContent = timeString;
+      if (seconds <= 10) {
+        el.style.color = '#ff3333';
+        el.style.borderColor = '#ff3333';
+        el.style.boxShadow = '0 0 12px rgba(255, 51, 51, 0.7)';
+      } else {
+        el.style.color = '#00ffff';
+        el.style.borderColor = 'rgba(0, 255, 255, 0.4)';
+        el.style.boxShadow = '0 0 10px rgba(0, 255, 255, 0.2)';
+      }
+    }
+  } else {
+    const el = document.getElementById('opponent-timer');
+    if (el) {
+      el.textContent = timeString;
+      if (seconds <= 10) {
+        el.style.color = '#ff3333';
+        el.style.borderColor = '#ff3333';
+        el.style.boxShadow = '0 0 12px rgba(255, 51, 51, 0.7)';
+      } else {
+        el.style.color = '#ff00ff';
+        el.style.borderColor = 'rgba(255, 0, 255, 0.4)';
+        el.style.boxShadow = '0 0 10px rgba(255, 0, 255, 0.2)';
+      }
+    }
+  }
+}
+
+function handleTimeout(losingColor) {
+  if (localOutcomeClaimed) return;
+  localOutcomeClaimed = true;
+  
+  stopLocalTimer();
+  
+  const db = getDatabase();
+  const gameId = getCurrentGameId();
+  if (!db || !gameId) return;
+  
+  console.log('Timeout loss detected for:', losingColor);
+  
+  const gameRef = db.ref('games/' + gameId);
+  gameRef.update({
+    status: 'timeout',
+    winner: losingColor === 'white' ? 'black' : 'white'
+  });
+}
+
+function stopLocalTimer() {
+  if (timerIntervalId) {
+    clearInterval(timerIntervalId);
+    timerIntervalId = null;
+  }
+  const myTimer = document.getElementById('my-timer');
+  const oppTimer = document.getElementById('opponent-timer');
+  if (myTimer) myTimer.style.display = 'none';
+  if (oppTimer) oppTimer.style.display = 'none';
+}
+
 function isReceivingOpponentMove() {
   return isApplyingOpponentMove;
 }
@@ -30,7 +161,25 @@ function initGameSync() {
   
   if (!db || !gameId) return;
   
+  initServerTimeOffset();
+  
   gameSyncRef = db.ref('games/' + gameId);
+  
+  // Listen to game properties for clock sync
+  gameSyncRef.on('value', (snapshot) => {
+    const game = snapshot.val();
+    if (!game || game.status === 'waiting_for_player' || game.status === 'waiting_private') return;
+    
+    whiteTimeLimit = game.whiteTime !== undefined ? game.whiteTime : (game.timeControl || 600);
+    blackTimeLimit = game.blackTime !== undefined ? game.blackTime : (game.timeControl || 600);
+    lastTurnTimestamp = game.lastTurnTimestamp || getSyncedTimestamp();
+    gameTimeControl = game.timeControl || 600;
+    
+    // Start local timer when the game goes active
+    if (game.status === 'active') {
+      startLocalTimer();
+    }
+  });
   
   gameSyncRef.child('moves').on('child_added', (snapshot) => {
     const move = snapshot.val();
@@ -41,21 +190,25 @@ function initGameSync() {
   
   gameSyncRef.child('status').on('value', (snapshot) => {
     const status = snapshot.val();
-    if (status === 'resigned' || status === 'disconnected' || status === 'abandoned' || status === 'checkmate') {
+    if (status === 'resigned' || status === 'disconnected' || status === 'abandoned' || status === 'checkmate' || status === 'timeout') {
       if (hasRecordedOutcome) return;
       
       gameSyncRef.child('winner').once('value', (winnerSnap) => {
         const winner = winnerSnap.val();
-        const isWinner = winner === getPlayerColor();
+        if (!winner) return;
         
-        if (isWinner && !hasRecordedOutcome) {
-          hasRecordedOutcome = true;
+        const isWinner = winner === getPlayerColor();
+        hasRecordedOutcome = true;
+        
+        stopLocalTimer();
+        
+        const oppData = {
+          username: document.getElementById('opponent-name')?.textContent || 'Oponente',
+          countryFlag: document.getElementById('opponent-flag')?.textContent || ''
+        };
+        
+        if (isWinner) {
           updateUserWins();
-          
-          const oppData = {
-            username: document.getElementById('opponent-name')?.textContent || 'Oponente',
-            countryFlag: document.getElementById('opponent-flag')?.textContent || ''
-          };
           saveGameToHistory('win', oppData, getGameMoves(), getPlayerColor());
           
           if (status === 'resigned') {
@@ -66,8 +219,28 @@ function initGameSync() {
             addChatMessage('Sistema', 'Tu oponente abandono. Ganaste!');
           } else if (status === 'checkmate') {
             addChatMessage('Sistema', 'JAQUE MATE! Ganaste!');
+          } else if (status === 'timeout') {
+            addChatMessage('Sistema', 'Victoria por tiempo! El oponente se quedo sin tiempo.');
           }
-          showOpponentAbandonedModal();
+          
+          showGameEndModal(true, status);
+        } else {
+          updateUserLosses();
+          saveGameToHistory('loss', oppData, getGameMoves(), getPlayerColor());
+          
+          if (status === 'resigned') {
+            addChatMessage('Sistema', 'Te has rendido. Perdiste la partida.');
+          } else if (status === 'disconnected') {
+            addChatMessage('Sistema', 'Te has desconectado. Perdiste la partida.');
+          } else if (status === 'abandoned') {
+            addChatMessage('Sistema', 'Has abandonado. Perdiste la partida.');
+          } else if (status === 'checkmate') {
+            addChatMessage('Sistema', 'JAQUE MATE! El oponente gana.');
+          } else if (status === 'timeout') {
+            addChatMessage('Sistema', 'Derrota por tiempo! Se te acabo el tiempo.');
+          }
+          
+          showGameEndModal(false, status);
         }
       });
     }
@@ -115,6 +288,14 @@ function syncMove(fromRow, fromCol, toRow, toCol, piece, metadata = {}) {
   
   if (!db || !gameId || gameMode !== 'online') return;
   
+  // Calculate elapsed time spent by this player
+  const now = getSyncedTimestamp();
+  const elapsedSeconds = Math.max(0, Math.floor((now - lastTurnTimestamp) / 1000));
+  
+  // Calculate their new remaining time
+  const myCurrentTimeLimit = color === 'white' ? whiteTimeLimit : blackTimeLimit;
+  const newRemainingTime = Math.max(0, myCurrentTimeLimit - elapsedSeconds);
+  
   const moveData = {
     fromRow,
     fromCol,
@@ -143,8 +324,21 @@ function syncMove(fromRow, fromCol, toRow, toCol, piece, metadata = {}) {
     promotionPiece: metadata.promotionPiece || null
   });
   
-  gameSyncRef.child('moves').push(moveData);
-  gameSyncRef.child('currentTurn').set(color === 'white' ? 'black' : 'white');
+  const nextTurn = color === 'white' ? 'black' : 'white';
+  const newMoveRef = gameSyncRef.child('moves').push();
+  
+  const updates = {};
+  updates['moves/' + newMoveRef.key] = moveData;
+  updates['currentTurn'] = nextTurn;
+  updates['lastTurnTimestamp'] = firebase.database.ServerValue.TIMESTAMP;
+  
+  if (color === 'white') {
+    updates['whiteTime'] = newRemainingTime;
+  } else {
+    updates['blackTime'] = newRemainingTime;
+  }
+  
+  gameSyncRef.update(updates);
 }
 
 function applyOpponentMove(move) {
@@ -288,4 +482,6 @@ function cleanupGameSync() {
   }
   
   hasRecordedOutcome = false;
+  
+  stopLocalTimer();
 }
