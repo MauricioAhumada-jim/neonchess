@@ -28,9 +28,9 @@ function startMatchmaking() {
     return queueRef.once('value');
   }).then((snapshot) => {
     const queue = snapshot.val() || {};
-    // Only match players with the exact same selected time control
+    // Only match players with the exact same selected time control and not already matched
     const waitingPlayers = Object.keys(queue).filter(uid => {
-      return uid !== user.uid && queue[uid].timeControl === selectedTimeControl;
+      return uid !== user.uid && queue[uid].timeControl === selectedTimeControl && !queue[uid].matchedGameId;
     });
     
     console.log('Queue check for time', selectedTimeControl, ':', waitingPlayers.length, 'players waiting');
@@ -41,13 +41,22 @@ function startMatchmaking() {
       
       console.log('Found opponent:', foundOpponentUid);
       
-      queueRef.child(foundOpponentUid).remove().then(() => {
-        createGame(user.uid, foundOpponentUid, profile, opponent, selectedTimeControl);
+      // Match handshake: Generate a unique game ID first
+      const gameRef = db.ref('games').push();
+      const gameId = gameRef.key;
+      
+      // Write gameId into the waiting player's queue record to notify them
+      db.ref('matchmaking_queue/' + foundOpponentUid).update({
+        matchedGameId: gameId
+      }).then(() => {
+        // Create the game in the database
+        createGame(gameId, user.uid, foundOpponentUid, profile, opponent, selectedTimeControl);
       });
     } else {
       console.log('No opponents, adding to queue');
       
-      queueRef.child(user.uid).set({
+      const myQueueRef = queueRef.child(user.uid);
+      myQueueRef.set({
         username: profile.username,
         country: profile.country,
         countryFlag: profile.countryFlag,
@@ -59,32 +68,33 @@ function startMatchmaking() {
       });
       
       matchmakingRef = queueRef;
-      matchmakingRef.on('child_removed', (snapshot) => {
-        if (snapshot.key === user.uid) {
-          console.log('I was removed from queue - checking for game');
-        }
-      });
       
-      const gamesRef = db.ref('games');
-      gamesRef.orderByChild('createdAt').limitToLast(10).on('child_added', (snapshot) => {
-        const game = snapshot.val();
-        if (game && game.players && game.players[user.uid] && game.status === 'waiting_for_player') {
-          console.log('Found game for me:', snapshot.key);
-          queueRef.child(user.uid).remove();
-          gamesRef.off();
-          joinExistingGame(snapshot.key, game);
+      // Direct, real-time matching handshake
+      myQueueRef.on('value', (snapshot) => {
+        const data = snapshot.val();
+        if (data && data.matchedGameId) {
+          console.log('I have been matched! Game ID:', data.matchedGameId);
+          myQueueRef.off();
+          
+          // Delete our queue entry since we matched
+          myQueueRef.remove();
+          
+          // Fetch the game data and join it
+          db.ref('games/' + data.matchedGameId).once('value').then((gameSnap) => {
+            joinExistingGame(data.matchedGameId, gameSnap.val());
+          });
         }
       });
     }
   });
 }
 
-function createGame(player1Uid, player2Uid, player1Profile, player2Data, timeControl) {
+function createGame(gameId, player1Uid, player2Uid, player1Profile, player2Data, timeControl) {
   const db = getDatabase();
   if (!db) return;
   
-  const gameRef = db.ref('games').push();
-  currentGameId = gameRef.key;
+  currentGameId = gameId;
+  const gameRef = db.ref('games/' + gameId);
   
   const whitePlayer = Math.random() < 0.5 ? player1Uid : player2Uid;
   const blackPlayer = whitePlayer === player1Uid ? player2Uid : player1Uid;
@@ -94,7 +104,7 @@ function createGame(player1Uid, player2Uid, player1Profile, player2Data, timeCon
   opponentData = player2Data;
   opponentUid = player2Uid;
   
-  console.log('Creating game:', currentGameId, 'I am', playerColor);
+  console.log('Creating game with pre-generated ID:', currentGameId, 'I am', playerColor);
   
   const gameData = {
     status: 'waiting_for_player',
