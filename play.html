@@ -67,15 +67,30 @@
 
     <div class="modal" id="login-modal">
       <div class="modal-content">
-        <h2>INICIAR SESION</h2>
-        <div class="login-form">
+        <div class="auth-tabs" style="display: flex; justify-content: center; margin-bottom: 20px; border-bottom: 1px solid rgba(0, 255, 255, 0.2);">
+          <button id="tab-login" class="auth-tab active" onclick="switchAuthTab('login')" style="flex: 1; background: none; border: none; padding: 12px; color: #00ffff; font-family: 'Orbitron', monospace; font-weight: bold; cursor: pointer; border-bottom: 2px solid #00ffff; outline: none; transition: all 0.3s ease;">INICIAR SESION</button>
+          <button id="tab-register" class="auth-tab" onclick="switchAuthTab('register')" style="flex: 1; background: none; border: none; padding: 12px; color: rgba(0, 255, 255, 0.5); font-family: 'Orbitron', monospace; font-weight: bold; cursor: pointer; border-bottom: 2px solid transparent; outline: none; transition: all 0.3s ease;">REGISTRARSE</button>
+        </div>
+        <div class="login-form" style="margin-top: 10px;">
+          <div class="input-group" style="margin-bottom: 15px;">
+            <label for="auth-email">Correo Electrónico</label>
+            <input type="email" id="auth-email" placeholder="usuario@correo.com" data-testid="input-email" required />
+          </div>
+          <div class="input-group" style="margin-bottom: 20px;">
+            <label for="auth-password">Contraseña</label>
+            <input type="password" id="auth-password" placeholder="••••••••" data-testid="input-password" required />
+          </div>
+          <button id="btn-email-auth" class="mode-btn" onclick="handleEmailAuth()" style="width: 100%;" data-testid="button-email-submit">
+            Iniciar Sesión
+          </button>
+          <div class="divider">Ó</div>
           <button class="mode-btn online google-btn" onclick="loginWithGoogle()" data-testid="button-google-login">
             <span class="google-icon">G</span> Continuar con Google
           </button>
           <button class="mode-btn" onclick="loginAsGuest()" style="background: rgba(0, 255, 255, 0.1); border: 1px solid #00ffff; color: #00ffff; margin-top: 10px;" data-testid="button-guest-login">
             <span class="mode-icon">&#x1F464;</span> Jugar como Invitado
           </button>
-          <p class="login-info">Inicia sesion para guardar tu progreso y jugar online</p>
+          <p class="login-info" style="margin-top: 15px;">Guarda tu progreso e historial de partidas online</p>
           <button class="back-btn" onclick="hideLoginModal()" data-testid="button-back-login">Cancelar</button>
         </div>
       </div>

@@ -266,3 +266,94 @@ function updateUserDraws() {
   }
   refreshLobbyStats();
 }
+
+// Lógica de Autenticación por Correo/Contraseña
+let currentAuthMode = 'login';
+
+function switchAuthTab(mode) {
+  currentAuthMode = mode;
+  const tabLogin = document.getElementById('tab-login');
+  const tabRegister = document.getElementById('tab-register');
+  const btnSubmit = document.getElementById('btn-email-auth');
+  
+  if (!tabLogin || !tabRegister || !btnSubmit) return;
+  
+  if (mode === 'login') {
+    tabLogin.style.color = '#00ffff';
+    tabLogin.style.borderBottom = '2px solid #00ffff';
+    tabRegister.style.color = 'rgba(0, 255, 255, 0.5)';
+    tabRegister.style.borderBottom = '2px solid transparent';
+    btnSubmit.textContent = 'Iniciar Sesión';
+  } else {
+    tabRegister.style.color = '#00ffff';
+    tabRegister.style.borderBottom = '2px solid #00ffff';
+    tabLogin.style.color = 'rgba(0, 255, 255, 0.5)';
+    tabLogin.style.borderBottom = '2px solid transparent';
+    btnSubmit.textContent = 'Registrarse';
+  }
+}
+
+function handleEmailAuth() {
+  const emailInput = document.getElementById('auth-email');
+  const passwordInput = document.getElementById('auth-password');
+  
+  const email = emailInput ? emailInput.value.trim() : '';
+  const password = passwordInput ? passwordInput.value : '';
+  
+  if (!email || !password) {
+    alert('Por favor ingresa tu correo y contraseña.');
+    return;
+  }
+  
+  const auth = getAuth();
+  if (!auth) {
+    alert('El servicio de autenticación no está disponible en este momento.');
+    return;
+  }
+  
+  if (currentAuthMode === 'login') {
+    auth.signInWithEmailAndPassword(email, password)
+      .then((result) => {
+        currentUser = result.user;
+        hideLoginModal();
+        checkUserProfile();
+      })
+      .catch((error) => {
+        console.error('Email login error:', error);
+        let message = 'Error al iniciar sesión.';
+        if (error.code === 'auth/wrong-password') {
+          message = 'Contraseña incorrecta.';
+        } else if (error.code === 'auth/user-not-found') {
+          message = 'No se encontró ningún usuario con este correo.';
+        } else if (error.code === 'auth/invalid-email') {
+          message = 'El formato del correo electrónico no es válido.';
+        } else if (error.code === 'auth/user-disabled') {
+          message = 'Esta cuenta ha sido inhabilitada.';
+        } else if (error.message) {
+          message += '\nDetalle: ' + error.message;
+        }
+        alert(message);
+      });
+  } else {
+    auth.createUserWithEmailAndPassword(email, password)
+      .then((result) => {
+        currentUser = result.user;
+        hideLoginModal();
+        checkUserProfile();
+      })
+      .catch((error) => {
+        console.error('Email registration error:', error);
+        let message = 'Error al registrar el usuario.';
+        if (error.code === 'auth/email-already-in-use') {
+          message = 'Este correo electrónico ya está registrado.';
+        } else if (error.code === 'auth/invalid-email') {
+          message = 'El formato del correo electrónico no es válido.';
+        } else if (error.code === 'auth/weak-password') {
+          message = 'La contraseña es demasiado débil (debe tener al menos 6 caracteres).';
+        } else if (error.message) {
+          message += '\nDetalle: ' + error.message;
+        }
+        alert(message);
+      });
+  }
+}

@@ -338,11 +338,26 @@ function goToOnlineMode() {
 function showLoginModal() {
   const m = document.getElementById('login-modal');
   if (m) m.classList.add('active');
+  
+  // Establecer pestaña de inicio de sesión por defecto y limpiar campos
+  if (typeof switchAuthTab === 'function') {
+    switchAuthTab('login');
+  }
+  const emailInput = document.getElementById('auth-email');
+  const passwordInput = document.getElementById('auth-password');
+  if (emailInput) emailInput.value = '';
+  if (passwordInput) passwordInput.value = '';
 }
 
 function hideLoginModal() {
   const m = document.getElementById('login-modal');
   if (m) m.classList.remove('active');
+  
+  // Limpiar campos al cerrar
+  const emailInput = document.getElementById('auth-email');
+  const passwordInput = document.getElementById('auth-password');
+  if (emailInput) emailInput.value = '';
+  if (passwordInput) passwordInput.value = '';
 }
 
 function showProfileModal() {
