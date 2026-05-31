@@ -122,55 +122,42 @@
     </div>
 
     <div class="modal" id="lobby-modal">
-      <div class="modal-content lobby-content">
+      <div class="modal-content lobby-content" style="max-width: 500px; width: 90%;">
         <h2>LOBBY MULTIJUGADOR</h2>
-        <div class="player-info" id="player-info-display">
-          <div class="player-avatar">
-            <span id="player-flag"></span>
-            <span id="player-name">Jugador</span>
+        
+        <div class="player-info" id="player-info-display" style="background: rgba(0, 255, 255, 0.05); border: 2px solid rgba(0, 255, 255, 0.3); border-radius: 12px; padding: 15px; margin-bottom: 25px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 8px;">
+          <div class="player-avatar" style="display: flex; align-items: center; gap: 10px;">
+            <span id="player-flag" style="font-size: 1.8rem;"></span>
+            <span id="player-name" style="font-size: 1.3rem; font-weight: bold; color: #00ffff; font-family: 'Orbitron', monospace; text-shadow: 0 0 10px rgba(0, 255, 255, 0.6);">Jugador</span>
           </div>
-          <div class="player-stats">
-            <span class="stat-item"><span class="stat-icon">&#x1F3C6;</span> <span id="player-wins">0</span> V</span>
-            <span class="stat-item stat-losses"><span id="player-losses">0</span> D</span>
-            <span class="stat-item stat-draws"><span id="player-draws">0</span> E</span>
+          <div class="player-stats" style="display: flex; align-items: center; gap: 10px; margin-top: 5px;">
+            <span class="stat-item" style="display: flex; align-items: center; gap: 4px; color: #00ffff; font-family: 'Orbitron', monospace; font-size: 0.85rem; padding: 4px 10px; background: rgba(0, 255, 255, 0.1); border: 1px solid rgba(0, 255, 255, 0.3); border-radius: 20px;"><span class="stat-icon">&#x1F3C6;</span> <span id="player-wins">0</span> V</span>
+            <span class="stat-item stat-losses" style="display: flex; align-items: center; gap: 4px; color: #ff6666; font-family: 'Orbitron', monospace; font-size: 0.85rem; padding: 4px 10px; background: rgba(255, 102, 102, 0.1); border: 1px solid rgba(255, 102, 102, 0.3); border-radius: 20px;"><span id="player-losses">0</span> D</span>
+            <span class="stat-item stat-draws" style="display: flex; align-items: center; gap: 4px; color: #ffaa00; font-family: 'Orbitron', monospace; font-size: 0.85rem; padding: 4px 10px; background: rgba(255, 170, 0, 0.1); border: 1px solid rgba(255, 170, 0, 0.3); border-radius: 20px;"><span id="player-draws">0</span> E</span>
           </div>
         </div>
-        <div class="lobby-actions">
-          <button class="lobby-btn lobby-btn-primary" onclick="startMatchmaking()" data-testid="button-find-match">
-            <svg class="btn-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <circle cx="11" cy="11" r="8"></circle>
-              <path d="m21 21-4.35-4.35"></path>
-            </svg>
-            <span class="btn-text">Buscar Partida</span>
-            <span class="btn-desc">Encuentra un oponente aleatorio</span>
+        
+        <div class="mode-buttons" style="display: flex; flex-direction: column; gap: 15px; margin-bottom: 25px;">
+          <button class="mode-btn online" onclick="startMatchmaking()" data-testid="button-find-match" style="width: 100%;">
+            <span class="mode-icon">&#x1F310;</span> Buscar Partida
           </button>
-          <div class="lobby-buttons-row">
-            <button class="lobby-btn lobby-btn-secondary" onclick="createPrivateGame()" data-testid="button-create-game">
-              <svg class="btn-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M12 5v14M5 12h14"></path>
-              </svg>
-              <span class="btn-text">Crear Partida</span>
-            </button>
-            <button class="lobby-btn lobby-btn-secondary" onclick="showJoinGameModal()" data-testid="button-join-game">
-              <svg class="btn-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4M10 17l5-5-5-5M13.8 12H3"></path>
-              </svg>
-              <span class="btn-text">Unirse a Partida</span>
-            </button>
-          </div>
-          <div class="lobby-buttons-row">
-            <button class="lobby-btn lobby-btn-secondary" onclick="showHistoryModal()" data-testid="button-history">
-              <svg class="btn-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <circle cx="12" cy="12" r="10"></circle>
-                <polyline points="12 6 12 12 16 14"></polyline>
-              </svg>
-              <span class="btn-text">Historial</span>
-            </button>
-          </div>
+          
+          <button class="mode-btn" onclick="createPrivateGame()" data-testid="button-create-game" style="width: 100%;">
+            <span class="mode-icon">&#x2795;</span> Crear Partida Privada
+          </button>
+          
+          <button class="mode-btn" onclick="showJoinGameModal()" data-testid="button-join-game" style="width: 100%;">
+            <span class="mode-icon">&#x1F517;</span> Unirse con Código
+          </button>
+          
+          <button class="mode-btn" onclick="showHistoryModal()" data-testid="button-history" style="width: 100%;">
+            <span class="mode-icon">&#x1F4CB;</span> Historial de Partidas
+          </button>
         </div>
-        <div class="lobby-bottom-actions">
-          <button class="back-btn" onclick="backToMainMenu()" data-testid="button-back-menu">Volver al Menu</button>
-          <button class="back-btn logout-btn" onclick="logout()" data-testid="button-logout">Cerrar Sesion</button>
+        
+        <div class="lobby-bottom-actions" style="display: flex; gap: 15px; width: 100%;">
+          <button class="back-btn" onclick="backToMainMenu()" data-testid="button-back-menu" style="flex: 1; padding: 12px; font-family: 'Orbitron', monospace; font-weight: bold; cursor: pointer; text-transform: uppercase;">Volver</button>
+          <button class="back-btn logout-btn" onclick="logout()" data-testid="button-logout" style="flex: 1; padding: 12px; font-family: 'Orbitron', monospace; font-weight: bold; cursor: pointer; text-transform: uppercase; border-color: #ff00ff; color: #ff00ff; background: rgba(255,0,255,0.05);">Cerrar Sesión</button>
         </div>
       </div>
     </div>
