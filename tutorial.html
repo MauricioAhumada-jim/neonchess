@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Tutorial de Ajedrez | Aprende Ajedrez desde Cero - NEON CHESS</title>
+    <meta name="description" content="Aprende a jugar ajedrez con nuestro tutorial completo. Lecciones basicas, aperturas populares, tacticas ganadoras y finales esenciales. Guia gratuita para principiantes y jugadores intermedios." />
+    <meta name="keywords" content="tutorial ajedrez, aprender ajedrez, como jugar ajedrez, aperturas ajedrez, tacticas ajedrez, finales ajedrez, lecciones ajedrez gratis, reglas ajedrez, estrategia ajedrez, movimientos ajedrez" />
+
+    <meta property="og:type" content="article" />
+    <meta property="og:url" content="https://neon-chess.com/tutorial.html" />
+    <meta property="og:title" content="Tutorial de Ajedrez - Aprende desde Cero | NEON CHESS" />
+    <meta property="og:description" content="Guia completa para aprender ajedrez: reglas, aperturas, tacticas y finales explicados paso a paso." />
+    <meta property="og:image" content="https://neon-chess.com/og-image.jpg" />
+    <meta property="og:locale" content="es_MX" />
+    <meta property="og:site_name" content="NEON CHESS" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Tutorial de Ajedrez - Aprende desde Cero" />
+    <meta name="twitter:description" content="Guia completa para aprender ajedrez: reglas, aperturas, tacticas y finales." />
+    <meta name="twitter:image" content="https://neon-chess.com/og-image.jpg" />
+
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="https://neon-chess.com/tutorial.html" />
+    <link rel="icon" type="image/png" href="favicon.png" />
+
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "Article",
+        "headline": "Tutorial Completo de Ajedrez para Principiantes",
+        "description": "Aprende a jugar ajedrez con nuestra guia completa: lecciones basicas, aperturas, tacticas y finales.",
+        "author": {
+          "@type": "Organization",
+          "name": "NEON CHESS"
+        },
+        "publisher": {
+          "@type": "Organization",
+          "name": "NEON CHESS"
+        },
+        "mainEntityOfPage": "https://neon-chess.com/tutorial.html"
+      }
+    </script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Jersey+10&display=swap" rel="stylesheet" />
+    
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      body { font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif; background: #0a0a0a; color: #fff; line-height: 1.8; }
+      
+      .header { background: linear-gradient(135deg, #1a0033 0%, #0a0a0a 100%); padding: 40px 20px; text-align: center; border-bottom: 2px solid rgba(255, 0, 255, 0.3); }
+      .logo { font-size: 2.5rem; font-family: "Jersey 10", monospace; color: #fff; text-decoration: none; text-shadow: 0 0 10px #ff00ff, 0 0 20px #ff00ff; display: inline-block; margin-bottom: 10px; }
+      .header h1 { font-size: clamp(1.5rem, 4vw, 2.5rem); color: #00ffff; text-shadow: 0 0 15px #00ffff; margin-bottom: 10px; }
+      .header p { color: #888; max-width: 600px; margin: 0 auto; }
+      
+      .nav-links { display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; margin-top: 20px; }
+      .nav-links a { color: #ff00ff; text-decoration: none; padding: 8px 20px; border: 1px solid #ff00ff; border-radius: 20px; transition: all 0.3s; font-size: 0.9rem; }
+      .nav-links a:hover { background: rgba(255, 0, 255, 0.2); box-shadow: 0 0 15px rgba(255, 0, 255, 0.4); }
+      
+      .toc { background: rgba(0, 255, 255, 0.05); border: 1px solid rgba(0, 255, 255, 0.2); border-radius: 15px; padding: 30px; max-width: 800px; margin: 40px auto; }
+      .toc h2 { color: #00ffff; margin-bottom: 20px; font-size: 1.3rem; }
+      .toc ul { list-style: none; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; }
+      .toc a { color: #ccc; text-decoration: none; padding: 8px 15px; display: block; border-left: 3px solid transparent; transition: all 0.3s; }
+      .toc a:hover { color: #00ffff; border-left-color: #00ffff; background: rgba(0, 255, 255, 0.1); }
+      
+      main { max-width: 900px; margin: 0 auto; padding: 20px; }
+      
+      .section { margin-bottom: 60px; padding: 40px; background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(255, 0, 255, 0.2); border-radius: 20px; }
+      .section h2 { font-size: clamp(1.5rem, 3vw, 2rem); color: #ff00ff; text-shadow: 0 0 15px rgba(255, 0, 255, 0.5); margin-bottom: 25px; padding-bottom: 15px; border-bottom: 1px solid rgba(255, 0, 255, 0.3); }
+      .section h3 { font-size: 1.3rem; color: #00ffff; margin: 25px 0 15px; }
+      .section p { color: #ccc; margin-bottom: 15px; }
+      .section ul, .section ol { color: #ccc; margin: 15px 0 15px 25px; }
+      .section li { margin-bottom: 10px; }
+      
+      .piece-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 15px; margin: 20px 0; }
+      .piece-card { background: rgba(0, 255, 255, 0.05); border: 1px solid rgba(0, 255, 255, 0.3); border-radius: 10px; padding: 20px; text-align: center; }
+      .piece-card .icon { font-size: 3rem; margin-bottom: 10px; }
+      .piece-card h4 { color: #00ffff; margin-bottom: 5px; }
+      .piece-card p { color: #888; font-size: 0.85rem; line-height: 1.4; }
+      
+      .opening-card { background: rgba(255, 0, 255, 0.05); border: 1px solid rgba(255, 0, 255, 0.3); border-radius: 15px; padding: 25px; margin: 20px 0; }
+      .opening-card h4 { color: #ff00ff; font-size: 1.2rem; margin-bottom: 10px; }
+      .opening-card .moves { font-family: monospace; color: #00ffff; background: rgba(0, 0, 0, 0.5); padding: 10px 15px; border-radius: 8px; margin: 10px 0; }
+      .opening-card p { color: #ccc; font-size: 0.95rem; }
+      
+      .tactic-card { background: linear-gradient(135deg, rgba(0, 255, 255, 0.1), rgba(255, 0, 255, 0.1)); border: 1px solid rgba(0, 255, 255, 0.3); border-radius: 15px; padding: 25px; margin: 20px 0; }
+      .tactic-card h4 { color: #00ffff; font-size: 1.2rem; margin-bottom: 10px; display: flex; align-items: center; gap: 10px; }
+      .tactic-card .emoji { font-size: 1.5rem; }
+      .tactic-card p { color: #ccc; }
+      
+      .tip-box { background: rgba(255, 200, 0, 0.1); border-left: 4px solid #ffcc00; padding: 20px; margin: 20px 0; border-radius: 0 10px 10px 0; }
+      .tip-box h4 { color: #ffcc00; margin-bottom: 10px; }
+      .tip-box p { color: #ccc; margin: 0; }
+      
+      .cta-section { text-align: center; padding: 60px 20px; background: radial-gradient(ellipse at center, #1a0033 0%, #0a0a0a 100%); margin-top: 40px; }
+      .cta-section h2 { font-size: clamp(1.5rem, 4vw, 2.5rem); color: #fff; margin-bottom: 20px; text-shadow: 0 0 20px #ff00ff; }
+      .cta-section p { color: #00ffff; margin-bottom: 30px; }
+      .cta-button { display: inline-block; padding: 20px 50px; font-size: 1.3rem; font-weight: bold; color: #fff; background: linear-gradient(45deg, #ff00ff, #00ffff); border-radius: 50px; text-decoration: none; transition: transform 0.3s, box-shadow 0.3s; box-shadow: 0 0 20px rgba(255, 0, 255, 0.5); }
+      .cta-button:hover { transform: scale(1.05); box-shadow: 0 0 40px rgba(255, 0, 255, 0.8); }
+      
+      footer { background: #0a0a0a; padding: 40px 20px; text-align: center; border-top: 1px solid rgba(255, 0, 255, 0.2); }
+      footer a { color: #00ffff; text-decoration: none; margin: 0 15px; }
+      footer a:hover { text-shadow: 0 0 10px #00ffff; }
+      footer p { color: #666; margin-top: 20px; }
+      
+      @media (max-width: 768px) {
+        .section { padding: 25px; }
+        .piece-grid { grid-template-columns: repeat(2, 1fr); }
+      }
+    </style>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-D4DB63JZEP"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-D4DB63JZEP');
+</script>
+  </head>
+  <body>
+    <header class="header">
+      <a href="index.html" class="logo">NEON CHESS</a>
+      <h1>Tutorial Completo de Ajedrez</h1>
+      <p>Aprende a jugar ajedrez desde cero. Domina las reglas, aperturas, tacticas y finales con nuestra guia gratuita.</p>
+      <nav class="nav-links">
+        <a href="index.html">Inicio</a>
+        <a href="play.html">Jugar Ahora</a>
+        <a href="#lecciones">Lecciones</a>
+        <a href="#aperturas">Aperturas</a>
+        <a href="#tacticas">Tacticas</a>
+        <a href="#finales">Finales</a>
+      </nav>
+    </header>
+
+    <nav class="toc">
+      <h2>Contenido del Tutorial</h2>
+      <ul>
+        <li><a href="#lecciones">1. Lecciones Basicas</a></li>
+        <li><a href="#piezas">2. Las Piezas y sus Movimientos</a></li>
+        <li><a href="#reglas">3. Reglas Especiales</a></li>
+        <li><a href="#aperturas">4. Aperturas Populares</a></li>
+        <li><a href="#tacticas">5. Tacticas Ganadoras</a></li>
+        <li><a href="#finales">6. Finales Esenciales</a></li>
+        <li><a href="#consejos">7. Consejos para Mejorar</a></li>
+      </ul>
+    </nav>
+
+    <main>
+      <section class="section" id="lecciones">
+        <h2>1. Lecciones Basicas de Ajedrez</h2>
+        <p>El ajedrez es un juego de estrategia entre dos jugadores que se juega en un tablero de 64 casillas alternando colores claros y oscuros. Cada jugador comienza con 16 piezas: un rey, una dama, dos torres, dos alfiles, dos caballos y ocho peones.</p>
+        
+        <h3>Objetivo del Juego</h3>
+        <p>El objetivo es dar <strong>jaque mate</strong> al rey enemigo. Esto ocurre cuando el rey esta amenazado y no tiene ninguna casilla segura a donde moverse, ni puede ser protegido por otra pieza.</p>
+        
+        <h3>Como se Coloca el Tablero</h3>
+        <ul>
+          <li>La casilla de la esquina derecha de cada jugador debe ser blanca.</li>
+          <li>La dama blanca va en casilla blanca, la dama negra en casilla negra.</li>
+          <li>Los peones ocupan toda la segunda fila de cada lado.</li>
+        </ul>
+
+        <div class="tip-box">
+          <h4>Consejo para Recordar</h4>
+          <p>"Dama en su color" - La dama siempre se coloca en la casilla de su mismo color al inicio de la partida.</p>
+        </div>
+      </section>
+
+      <section class="section" id="piezas">
+        <h2>2. Las Piezas y sus Movimientos</h2>
+        <p>Cada pieza tiene un movimiento unico. Conocerlos es fundamental para jugar ajedrez.</p>
+        
+        <div class="piece-grid">
+          <div class="piece-card">
+            <div class="icon">&#9812;</div>
+            <h4>Rey</h4>
+            <p>Una casilla en cualquier direccion. Es la pieza mas importante.</p>
+          </div>
+          <div class="piece-card">
+            <div class="icon">&#9813;</div>
+            <h4>Dama</h4>
+            <p>Cualquier numero de casillas en linea recta o diagonal.</p>
+          </div>
+          <div class="piece-card">
+            <div class="icon">&#9814;</div>
+            <h4>Torre</h4>
+            <p>Cualquier numero de casillas en horizontal o vertical.</p>
+          </div>
+          <div class="piece-card">
+            <div class="icon">&#9815;</div>
+            <h4>Alfil</h4>
+            <p>Cualquier numero de casillas en diagonal.</p>
+          </div>
+          <div class="piece-card">
+            <div class="icon">&#9816;</div>
+            <h4>Caballo</h4>
+            <p>Movimiento en "L": dos casillas y luego una perpendicular. Salta piezas.</p>
+          </div>
+          <div class="piece-card">
+            <div class="icon">&#9817;</div>
+            <h4>Peon</h4>
+            <p>Avanza una casilla (o dos en su primer movimiento). Captura en diagonal.</p>
+          </div>
+        </div>
+
+        <h3>Valor de las Piezas</h3>
+        <p>Aunque el rey no tiene valor numerico (perderlo es perder), las demas piezas tienen valores relativos:</p>
+        <ul>
+          <li><strong>Peon:</strong> 1 punto</li>
+          <li><strong>Caballo:</strong> 3 puntos</li>
+          <li><strong>Alfil:</strong> 3 puntos</li>
+          <li><strong>Torre:</strong> 5 puntos</li>
+          <li><strong>Dama:</strong> 9 puntos</li>
+        </ul>
+      </section>
+
+      <section class="section" id="reglas">
+        <h2>3. Reglas Especiales</h2>
+        
+        <h3>Enroque</h3>
+        <p>Movimiento especial donde el rey y una torre se mueven simultaneamente. El rey avanza dos casillas hacia la torre, y la torre salta al otro lado del rey.</p>
+        <p><strong>Requisitos:</strong> Ni el rey ni la torre han movido, no hay piezas entre ellos, el rey no esta en jaque y no pasa por casillas atacadas.</p>
+        
+        <h3>Captura al Paso (En Passant)</h3>
+        <p>Cuando un peon avanza dos casillas desde su posicion inicial y queda junto a un peon enemigo, este puede capturarlo como si hubiera avanzado solo una casilla. Solo es valido inmediatamente despues del movimiento.</p>
+        
+        <h3>Promocion del Peon</h3>
+        <p>Cuando un peon alcanza la ultima fila, se transforma en cualquier pieza (excepto rey). Generalmente se elige la dama por ser la mas poderosa.</p>
+        
+        <h3>Tablas (Empate)</h3>
+        <ul>
+          <li><strong>Ahogado:</strong> Un jugador no tiene movimientos legales pero su rey no esta en jaque.</li>
+          <li><strong>Material insuficiente:</strong> Ninguno puede dar mate (ej: rey contra rey).</li>
+          <li><strong>Repeticion triple:</strong> La misma posicion se repite tres veces.</li>
+          <li><strong>Regla de 50 movimientos:</strong> 50 movimientos sin capturas ni movimientos de peon.</li>
+        </ul>
+      </section>
+
+      <section class="section" id="aperturas">
+        <h2>4. Aperturas Populares</h2>
+        <p>Las aperturas son los primeros movimientos de la partida. Conocer algunas te dara ventaja desde el inicio.</p>
+
+        <div class="opening-card">
+          <h4>Apertura Italiana</h4>
+          <div class="moves">1.e4 e5 2.Cf3 Cc6 3.Ac4</div>
+          <p>Una de las aperturas mas antiguas y educativas. Desarrolla piezas rapidamente y apunta al punto debil f7. Ideal para principiantes que quieren aprender principios solidos.</p>
+        </div>
+
+        <div class="opening-card">
+          <h4>Defensa Siciliana</h4>
+          <div class="moves">1.e4 c5</div>
+          <p>La defensa mas popular contra 1.e4 a nivel profesional. Crea posiciones asimetricas y dinamicas. Las negras buscan contrajuego en el flanco de dama.</p>
+        </div>
+
+        <div class="opening-card">
+          <h4>Gambito de Dama</h4>
+          <div class="moves">1.d4 d5 2.c4</div>
+          <p>Apertura posicional donde las blancas ofrecen un peon para controlar el centro. Lleva a posiciones estrategicas profundas. Muy usada por campeones mundiales.</p>
+        </div>
+
+        <div class="opening-card">
+          <h4>Defensa Caro-Kann</h4>
+          <div class="moves">1.e4 c6</div>
+          <p>Defensa solida y dificil de romper. Las negras preparan d5 con apoyo del peon c6. Preferida por jugadores que buscan posiciones seguras.</p>
+        </div>
+
+        <div class="tip-box">
+          <h4>Principios de Apertura</h4>
+          <p>1. Controla el centro (casillas e4, d4, e5, d5). 2. Desarrolla tus piezas menores primero. 3. Enroca temprano para proteger tu rey. 4. No muevas la misma pieza dos veces. 5. No saques la dama muy pronto.</p>
+        </div>
+      </section>
+
+      <section class="section" id="tacticas">
+        <h2>5. Tacticas Ganadoras</h2>
+        <p>Las tacticas son combinaciones de movimientos que te dan ventaja material o posicional. Dominarlas es clave para ganar partidas.</p>
+
+        <div class="tactic-card">
+          <h4><span class="emoji">&#9876;</span> Horquilla (Tenedor)</h4>
+          <p>Una pieza ataca a dos o mas piezas enemigas simultaneamente. El caballo es especialista en esto por su movimiento unico. Por ejemplo, un caballo atacando rey y torre a la vez.</p>
+        </div>
+
+        <div class="tactic-card">
+          <h4><span class="emoji">&#128204;</span> Clavada</h4>
+          <p>Una pieza no puede moverse porque dejaria expuesta a una pieza mas valiosa detras de ella (usualmente el rey). Las torres y alfiles son expertos en clavar piezas.</p>
+        </div>
+
+        <div class="tactic-card">
+          <h4><span class="emoji">&#9889;</span> Ataque Doble</h4>
+          <p>Similar a la horquilla, pero puede ser ejecutado por cualquier pieza. Atacas dos objetivos y tu oponente solo puede defender uno.</p>
+        </div>
+
+        <div class="tactic-card">
+          <h4><span class="emoji">&#127919;</span> Ataque Descubierto</h4>
+          <p>Al mover una pieza, descubres un ataque de otra pieza que estaba detras. Si la pieza que mueves tambien ataca, es un "jaque doble descubierto".</p>
+        </div>
+
+        <div class="tactic-card">
+          <h4><span class="emoji">&#128165;</span> Sacrificio</h4>
+          <p>Entregar material voluntariamente para obtener una ventaja mayor: mejor posicion, ataque al rey, o incluso jaque mate. Requiere calculo preciso.</p>
+        </div>
+
+        <div class="tactic-card">
+          <h4><span class="emoji">&#129520;</span> Desviacion</h4>
+          <p>Obligar a una pieza defensora a abandonar su puesto mediante un ataque o amenaza, dejando desprotegido lo que defendia.</p>
+        </div>
+      </section>
+
+      <section class="section" id="finales">
+        <h2>6. Finales Esenciales</h2>
+        <p>Los finales son la etapa donde quedan pocas piezas. Conocer los finales basicos te ayudara a convertir ventajas en victorias.</p>
+
+        <h3>Rey y Dama vs Rey</h3>
+        <p>Mate facil. Usa la dama para limitar los movimientos del rey enemigo, empujandolo hacia el borde del tablero. Tu rey debe ayudar en la maniobra final.</p>
+
+        <h3>Rey y Torre vs Rey</h3>
+        <p>Requiere tecnica. Empuja al rey enemigo al borde con tu torre, usando tu rey para apoyar. El mate se da en la banda del tablero.</p>
+
+        <h3>Rey y Peon vs Rey</h3>
+        <p>El final mas importante. La clave es la "oposicion": si tu rey esta frente al rey enemigo con una casilla de distancia, tienes la oposicion. Esto determina si el peon corona o no.</p>
+
+        <h3>Regla del Cuadrado</h3>
+        <p>Para saber si un rey alcanza a un peon: dibuja mentalmente un cuadrado desde el peon hasta la casilla de coronacion. Si el rey puede entrar al cuadrado, alcanza al peon.</p>
+
+        <div class="tip-box">
+          <h4>El Rey es Fuerte en el Final</h4>
+          <p>A diferencia del medio juego, en el final el rey debe ser activo. Centralizalo y usalo para apoyar tus peones o atacar los del rival.</p>
+        </div>
+      </section>
+
+      <section class="section" id="consejos">
+        <h2>7. Consejos para Mejorar</h2>
+        
+        <ol>
+          <li><strong>Juega muchas partidas:</strong> La practica es fundamental. Cada partida es una leccion.</li>
+          <li><strong>Analiza tus partidas:</strong> Revisa tus errores y aprende de ellos. NEON CHESS tiene un sistema de historial para esto.</li>
+          <li><strong>Estudia tacticas:</strong> Dedica 15-20 minutos diarios a resolver problemas tacticos.</li>
+          <li><strong>Aprende finales basicos:</strong> Muchos jugadores los ignoran, pero son cruciales para ganar partidas igualadas.</li>
+          <li><strong>No te rindas:</strong> Incluso en posiciones dificiles, tu oponente puede cometer errores.</li>
+          <li><strong>Controla el tiempo:</strong> No juegues muy rapido ni muy lento. Encuentra tu ritmo.</li>
+          <li><strong>Juega contra oponentes mas fuertes:</strong> Es la mejor forma de mejorar rapidamente.</li>
+        </ol>
+      </section>
+    </main>
+
+    <section class="cta-section">
+      <h2>Pon en Practica lo Aprendido</h2>
+      <p>Ahora que conoces las bases, es hora de jugar. Entrena contra la IA o desafia a jugadores reales.</p>
+      <a href="play.html" class="cta-button" data-testid="button-play">JUGAR AHORA</a>
+    </section>
+
+    <footer>
+      <nav>
+        <a href="index.html">Inicio</a>
+        <a href="play.html">Jugar</a>
+        <a href="tutorial.html">Tutorial</a>
+      </nav>
+      <p>2026 NEON CHESS - El futuro del ajedrez online</p>
+    </footer>
+  </body>
+</html>

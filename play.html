@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Neon Chess - Cyberpunk Edition</title>
+    <link rel="stylesheet" href="styles.css" />
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-D4DB63JZEP"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-D4DB63JZEP');
+</script>
+  </head>
+
+  <body>
+    <div class="scanlines"></div>
+    <div class="grid-overlay"></div>
+
+    <div class="game-mode-modal" id="game-mode-modal">
+      <div class="game-mode-content">
+        <h2>SELECCIONA MODO DE JUEGO</h2>
+        <div class="mode-buttons">
+          <button class="mode-btn" onclick="selectPvP()" data-testid="button-pvp">
+            <span class="mode-icon">&#x1F465;</span> Jugador vs Jugador
+          </button>
+          <button class="mode-btn" onclick="showDifficulty()" data-testid="button-ai">
+            <span class="mode-icon">&#x1F916;</span> Jugar vs Computadora
+          </button>
+          <button class="mode-btn online" onclick="goToOnlineMode()" data-testid="button-online">
+            <span class="mode-icon">&#x1F310;</span> Multijugador Online
+          </button>
+        </div>
+
+        <div class="difficulty-section" id="difficulty-section">
+          <h3>Selecciona Dificultad:</h3>
+          <div class="difficulty-buttons">
+            <button class="difficulty-btn easy" onclick="selectAI('easy')" data-testid="button-easy">Facil</button>
+            <button class="difficulty-btn medium" onclick="selectAI('medium')" data-testid="button-medium">Media</button>
+            <button class="difficulty-btn hard" onclick="selectAI('hard')" data-testid="button-hard">Dificil</button>
+            <button class="difficulty-btn extreme" onclick="selectAI('extreme')" data-testid="button-extreme">Extremo</button>
+          </div>
+          <button class="back-btn" onclick="hideDifficulty()" data-testid="button-back-difficulty">Volver</button>
+        </div>
+
+        <div class="menu-footer">
+          <button class="donate-btn" onclick="showDonateModal()" data-testid="button-donate">
+            <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16">
+              <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+            </svg>
+            Apoyar el Proyecto
+          </button>
+          <div class="menu-links">
+            <a href="index.html" data-testid="link-home">Inicio</a>
+            <a href="tutorial.html" data-testid="link-tutorial">Tutorial</a>
+            <a href="#" onclick="showTermsModal(); return false;" data-testid="link-terms">Terminos</a>
+          </div>
+          <div class="made-by">
+            Hecho con <span class="heart-icon">&#10084;</span> por <a href="https://estampalos.netlify.app/" target="_blank" rel="noopener" data-testid="link-estampalos">Estampalos</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal" id="login-modal">
+      <div class="modal-content">
+        <h2>INICIAR SESION</h2>
+        <div class="login-form">
+          <button class="mode-btn online google-btn" onclick="loginWithGoogle()" data-testid="button-google-login">
+            <span class="google-icon">G</span> Continuar con Google
+          </button>
+          <p class="login-info">Inicia sesion para guardar tu progreso y jugar online</p>
+          <button class="back-btn" onclick="hideLoginModal()" data-testid="button-back-login">Cancelar</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal" id="profile-modal">
+      <div class="modal-content profile-content">
+        <h2>CONFIGURA TU PERFIL</h2>
+        <div class="profile-form">
+          <div class="input-group">
+            <label for="profile-username">Nombre de Usuario</label>
+            <input type="text" id="profile-username" placeholder="Tu nombre de batalla" maxlength="20" data-testid="input-username" />
+          </div>
+          <div class="input-group">
+            <label>Selecciona tu Pais</label>
+            <div class="country-grid" id="country-grid"></div>
+          </div>
+          <button class="mode-btn" onclick="saveProfile()" data-testid="button-save-profile">Guardar Perfil</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal" id="lobby-modal">
+      <div class="modal-content lobby-content">
+        <h2>LOBBY MULTIJUGADOR</h2>
+        <div class="player-info" id="player-info-display">
+          <div class="player-avatar">
+            <span id="player-flag"></span>
+            <span id="player-name">Jugador</span>
+          </div>
+          <div class="player-stats">
+            <span class="stat-item"><span class="stat-icon">&#x1F3C6;</span> <span id="player-wins">0</span> V</span>
+            <span class="stat-item stat-losses"><span id="player-losses">0</span> D</span>
+            <span class="stat-item stat-draws"><span id="player-draws">0</span> E</span>
+          </div>
+        </div>
+        <div class="lobby-actions">
+          <button class="lobby-btn lobby-btn-primary" onclick="startMatchmaking()" data-testid="button-find-match">
+            <svg class="btn-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="11" cy="11" r="8"></circle>
+              <path d="m21 21-4.35-4.35"></path>
+            </svg>
+            <span class="btn-text">Buscar Partida</span>
+            <span class="btn-desc">Encuentra un oponente aleatorio</span>
+          </button>
+          <div class="lobby-buttons-row">
+            <button class="lobby-btn lobby-btn-secondary" onclick="createPrivateGame()" data-testid="button-create-game">
+              <svg class="btn-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 5v14M5 12h14"></path>
+              </svg>
+              <span class="btn-text">Crear Partida</span>
+            </button>
+            <button class="lobby-btn lobby-btn-secondary" onclick="showJoinGameModal()" data-testid="button-join-game">
+              <svg class="btn-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4M10 17l5-5-5-5M13.8 12H3"></path>
+              </svg>
+              <span class="btn-text">Unirse a Partida</span>
+            </button>
+          </div>
+          <div class="lobby-buttons-row">
+            <button class="lobby-btn lobby-btn-secondary" onclick="showHistoryModal()" data-testid="button-history">
+              <svg class="btn-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"></circle>
+                <polyline points="12 6 12 12 16 14"></polyline>
+              </svg>
+              <span class="btn-text">Historial</span>
+            </button>
+          </div>
+        </div>
+        <div class="lobby-bottom-actions">
+          <button class="back-btn" onclick="backToMainMenu()" data-testid="button-back-menu">Volver al Menu</button>
+          <button class="back-btn logout-btn" onclick="logout()" data-testid="button-logout">Cerrar Sesion</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal" id="game-code-modal">
+      <div class="modal-content">
+        <h2>PARTIDA CREADA</h2>
+        <p style="color: #00ffff; text-align: center; margin: 15px 0;">Comparte este codigo con tu oponente:</p>
+        <div class="game-code-display">
+          <span id="game-code-text" data-testid="text-game-code">XXXXXX</span>
+          <button class="copy-btn" onclick="copyGameCode()" data-testid="button-copy-code">Copiar</button>
+        </div>
+        <p style="color: #888; text-align: center; font-size: 0.9em; margin-top: 15px;">Esperando a que tu oponente se una...</p>
+        <div class="spinner" style="margin: 15px auto;"></div>
+        <button class="back-btn" onclick="cancelPrivateGame()" data-testid="button-cancel-private">Cancelar</button>
+      </div>
+    </div>
+
+    <div class="modal" id="join-game-modal">
+      <div class="modal-content">
+        <h2>UNIRSE A PARTIDA</h2>
+        <p style="color: #00ffff; text-align: center; margin: 15px 0;">Ingresa el codigo de la partida:</p>
+        <div class="join-code-input">
+          <input type="text" id="join-code-input" maxlength="6" placeholder="CODIGO" data-testid="input-game-code" />
+        </div>
+        <div class="join-error" id="join-error" style="color: #ff4444; text-align: center; margin: 10px 0; display: none;"></div>
+        <div class="join-actions">
+          <button class="lobby-btn lobby-btn-primary" onclick="joinPrivateGame()" data-testid="button-join-private">
+            <svg class="btn-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4M10 17l5-5-5-5M13.8 12H3"></path>
+            </svg>
+            <span class="btn-text">Unirse</span>
+          </button>
+        </div>
+        <button class="back-btn" onclick="hideJoinGameModal()" data-testid="button-cancel-join">Cancelar</button>
+      </div>
+    </div>
+
+    <div class="modal" id="waiting-modal">
+      <div class="modal-content">
+        <div class="waiting-screen">
+          <h3>Buscando Oponente...</h3>
+          <div class="spinner"></div>
+          <p class="waiting-text">Conectando con otros jugadores</p>
+          <button class="btn" onclick="cancelMatchmaking()" data-testid="button-cancel-matchmaking">Cancelar</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal" id="opponent-found-modal">
+      <div class="modal-content opponent-found-content">
+        <h2>OPONENTE ENCONTRADO</h2>
+        <div class="match-display">
+          <div class="match-player">
+            <span id="my-match-flag" class="match-flag"></span>
+            <span id="my-match-name" class="match-name">Tu</span>
+            <span id="my-match-color" class="match-color"></span>
+          </div>
+          <div class="vs-text">VS</div>
+          <div class="match-player">
+            <span id="opponent-match-flag" class="match-flag"></span>
+            <span id="opponent-match-name" class="match-name">Oponente</span>
+            <span id="opponent-match-color" class="match-color"></span>
+          </div>
+        </div>
+        <p class="match-starting">La partida comenzara en breve...</p>
+      </div>
+    </div>
+
+    <div class="game-container">
+      <h1 class="title">NEON CHESS</h1>
+      
+      <div class="game-header" id="game-header" style="display: none;">
+        <div class="player-display player-top" id="player-top">
+          <span class="player-flag-small" id="opponent-flag"></span>
+          <span class="player-name-small" id="opponent-name">Oponente</span>
+          <span class="player-stats-small" id="opponent-stats"></span>
+        </div>
+      </div>
+
+      <div class="status" id="status" data-testid="text-status">Turno: Blancas</div>
+
+      <div class="board-wrapper">
+        <div class="coords-row coords-top">
+          <span>a</span><span>b</span><span>c</span><span>d</span><span>e</span><span>f</span><span>g</span><span>h</span>
+        </div>
+        <div class="board-with-coords">
+          <div class="coords-col coords-left">
+            <span>8</span><span>7</span><span>6</span><span>5</span><span>4</span><span>3</span><span>2</span><span>1</span>
+          </div>
+          <div class="chess-board" id="board" data-testid="chess-board"></div>
+          <div class="coords-col coords-right">
+            <span>8</span><span>7</span><span>6</span><span>5</span><span>4</span><span>3</span><span>2</span><span>1</span>
+          </div>
+        </div>
+        <div class="coords-row coords-bottom">
+          <span>a</span><span>b</span><span>c</span><span>d</span><span>e</span><span>f</span><span>g</span><span>h</span>
+        </div>
+      </div>
+
+      <div class="game-header" id="game-footer" style="display: none;">
+        <div class="player-display player-bottom" id="player-bottom">
+          <span class="player-flag-small" id="my-flag"></span>
+          <span class="player-name-small" id="my-name">Tu</span>
+          <span class="player-stats-small" id="my-stats"></span>
+        </div>
+      </div>
+
+      <div class="controls">
+        <button class="btn" onclick="resetGame()" data-testid="button-new-game">Nueva Partida</button>
+        <button class="btn" onclick="undoMove()" data-testid="button-undo">Deshacer</button>
+        <button class="btn" id="resign-btn" onclick="resignGame()" style="display: none;" data-testid="button-resign">Rendirse</button>
+      </div>
+
+      <div class="move-history">
+        <h3>Historial</h3>
+        <div id="moves-list" data-testid="moves-list"></div>
+      </div>
+
+      <div class="captured-pieces">
+        <h3>Piezas Capturadas</h3>
+        <div class="captured-section">
+          <h4>Blancas capturadas:</h4>
+          <div class="captured-list" id="white-captured" data-testid="white-captured"></div>
+        </div>
+        <div class="captured-section">
+          <h4>Negras capturadas:</h4>
+          <div class="captured-list" id="black-captured" data-testid="black-captured"></div>
+        </div>
+      </div>
+
+      <div class="chat-container" id="chat-container">
+        <div class="chat-header">Chat del Juego</div>
+        <div class="chat-messages" id="chat-messages" data-testid="chat-messages">
+          <div class="chat-message">
+            <div class="timestamp">Sistema</div>
+            <div>Bienvenidos al juego. Buena suerte a ambos jugadores.</div>
+          </div>
+        </div>
+        <div class="chat-input-container">
+          <input type="text" class="chat-input" id="chat-input" placeholder="Escribe un mensaje..." maxlength="100" data-testid="input-chat" />
+          <button class="chat-send" onclick="sendMessage()" data-testid="button-send-chat">Enviar</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="promotion-modal" id="promotion-modal">
+      <div class="promotion-content">
+        <h2>Promocion de Peon</h2>
+        <p style="color: #00ffff; text-align: center; margin-bottom: 20px;">Elige la pieza:</p>
+        <div class="promotion-pieces" id="promotion-pieces"></div>
+      </div>
+    </div>
+
+    <div class="checkmate-modal" id="checkmate-modal">
+      <div class="checkmate-content">
+        <div class="fireworks" id="fireworks"></div>
+        <div class="checkmate-icon"></div>
+        <h2 id="checkmate-title">JAQUE MATE</h2>
+        <div class="checkmate-winner" id="checkmate-winner" data-testid="text-winner">Las Blancas Ganan</div>
+        <div class="checkmate-buttons">
+          <button class="checkmate-btn" onclick="closeCheckmateModal()" data-testid="button-new-game-end">Nueva Partida</button>
+          <button class="checkmate-btn secondary" onclick="closeCheckmateModalOnly()" data-testid="button-view-board">Ver Tablero</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal" id="disconnect-modal">
+      <div class="modal-content">
+        <h2>OPONENTE DESCONECTADO</h2>
+        <p style="color: #00ffff; text-align: center; margin: 20px 0;">Tu oponente se ha desconectado de la partida.</p>
+        <div class="checkmate-buttons">
+          <button class="checkmate-btn" onclick="claimVictory()" data-testid="button-claim-victory">Reclamar Victoria</button>
+          <button class="checkmate-btn secondary" onclick="returnToLobby()" data-testid="button-return-lobby">Volver al Lobby</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal" id="abandon-modal">
+      <div class="modal-content">
+        <h2>ABANDONAR PARTIDA</h2>
+        <p style="color: #ff6b6b; text-align: center; margin: 20px 0;">¿Seguro que quieres abandonar la partida?</p>
+        <p style="color: #00ffff; text-align: center; margin-bottom: 20px;">Tu oponente ganara automaticamente.</p>
+        <div class="checkmate-buttons">
+          <button class="checkmate-btn" onclick="confirmAbandon()" data-testid="button-confirm-abandon">Si, abandonar</button>
+          <button class="checkmate-btn secondary" onclick="cancelAbandon()" data-testid="button-cancel-abandon">No, continuar</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal" id="history-modal">
+      <div class="modal-content history-content">
+        <h2>HISTORIAL DE PARTIDAS</h2>
+        <div class="history-list" id="history-list">
+          <div class="history-loading">Cargando partidas...</div>
+        </div>
+        <button class="back-btn" onclick="hideHistoryModal()" data-testid="button-close-history">Cerrar</button>
+      </div>
+    </div>
+
+    <div class="modal" id="replay-modal">
+      <div class="modal-content replay-content">
+        <h2>ANALISIS DE PARTIDA</h2>
+        <div class="replay-info" id="replay-info"></div>
+        <div class="replay-board" id="replay-board"></div>
+        <div class="replay-controls">
+          <button class="replay-btn" onclick="replayFirst()" data-testid="button-replay-first">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polygon points="19 20 9 12 19 4 19 20"></polygon>
+              <line x1="5" y1="19" x2="5" y2="5"></line>
+            </svg>
+          </button>
+          <button class="replay-btn" onclick="replayPrev()" data-testid="button-replay-prev">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polygon points="19 20 9 12 19 4 19 20"></polygon>
+            </svg>
+          </button>
+          <span class="replay-counter" id="replay-counter">0 / 0</span>
+          <button class="replay-btn" onclick="replayNext()" data-testid="button-replay-next">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polygon points="5 4 15 12 5 20 5 4"></polygon>
+            </svg>
+          </button>
+          <button class="replay-btn" onclick="replayLast()" data-testid="button-replay-last">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polygon points="5 4 15 12 5 20 5 4"></polygon>
+              <line x1="19" y1="5" x2="19" y2="19"></line>
+            </svg>
+          </button>
+        </div>
+        <button class="back-btn" onclick="backToHistory()" data-testid="button-back-history">Volver al Historial</button>
+      </div>
+    </div>
+
+    <div class="modal" id="donate-modal">
+      <div class="modal-content donate-content">
+        <h2>APOYA NEON CHESS</h2>
+        <div class="donate-message">
+          <p>Tu apoyo nos ayuda a mantener los servidores activos, mejorar constantemente el juego y desarrollar nuevas funciones emocionantes como torneos competitivos, rankings globales y mucho mas.</p>
+          <p class="donate-thanks">Cada contribucion, por pequena que sea, hace una gran diferencia. Gracias por ser parte de esta comunidad.</p>
+        </div>
+        <div class="donate-buttons">
+          <a href="https://www.paypal.com/donate/?hosted_button_id=NZATWWD7JH5DW" target="_blank" rel="noopener" class="donate-link paypal" data-testid="button-paypal">
+            <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20">
+              <path d="M7.076 21.337H2.47a.641.641 0 0 1-.633-.74L4.944 3.72a.771.771 0 0 1 .76-.655h6.788c2.37 0 4.206.638 5.327 1.842.524.562.865 1.194 1.049 1.929.196.786.199 1.722.009 2.86l-.006.044v.389l.306.167c.259.135.467.287.64.46.357.356.597.802.714 1.323.121.537.132 1.178.033 1.905-.112.846-.334 1.59-.66 2.206a4.44 4.44 0 0 1-1.19 1.477c-.468.381-.995.669-1.583.862-.568.19-1.252.285-2.037.285H14.03a.98.98 0 0 0-.968.835l-.027.165-.505 3.186-.021.127a.98.98 0 0 1-.968.835H7.076z"/>
+            </svg>
+            Donar con PayPal
+          </a>
+          <a href="https://www.patreon.com/MauricioAhumada" target="_blank" rel="noopener" class="donate-link patreon" data-testid="button-patreon">
+            <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20">
+              <path d="M15.386 2c-3.467 0-6.28 2.814-6.28 6.28 0 3.467 2.813 6.28 6.28 6.28 3.466 0 6.28-2.813 6.28-6.28C21.666 4.814 18.852 2 15.386 2zM2.334 22h3.333V2H2.334v20z"/>
+            </svg>
+            Apoyar en Patreon
+          </a>
+        </div>
+        <button class="back-btn" onclick="hideDonateModal()" data-testid="button-close-donate">Cerrar</button>
+      </div>
+    </div>
+
+    <div class="modal" id="terms-modal">
+      <div class="modal-content terms-content">
+        <h2>TERMINOS Y CONDICIONES</h2>
+        <div class="terms-text">
+          <h3>1. Aceptacion de los Terminos</h3>
+          <p>Al acceder y utilizar Neon Chess, aceptas estos terminos y condiciones en su totalidad. Si no estas de acuerdo con alguna parte de estos terminos, no debes utilizar este servicio.</p>
+          
+          <h3>2. Uso del Servicio</h3>
+          <p>Neon Chess es un juego de ajedrez en linea gratuito. Te comprometes a utilizar el servicio de manera responsable y respetuosa con otros jugadores. Esta prohibido el uso de trampas, bots o cualquier software que otorgue ventajas injustas.</p>
+          
+          <h3>3. Cuentas de Usuario</h3>
+          <p>Al crear una cuenta mediante Google, eres responsable de mantener la confidencialidad de tu cuenta. Nos reservamos el derecho de suspender o eliminar cuentas que violen estos terminos.</p>
+          
+          <h3>4. Donaciones</h3>
+          <p>Las donaciones realizadas a traves de PayPal o Patreon son voluntarias y no reembolsables. Las donaciones se utilizan para el mantenimiento de servidores y el desarrollo continuo del juego.</p>
+          
+          <h3>5. Propiedad Intelectual</h3>
+          <p>Todo el contenido de Neon Chess, incluyendo graficos, codigo y diseno, es propiedad de sus creadores y esta protegido por derechos de autor.</p>
+          
+          <h3>6. Limitacion de Responsabilidad</h3>
+          <p>Neon Chess se proporciona "tal cual" sin garantias de ningun tipo. No nos hacemos responsables de perdidas de datos o interrupciones del servicio.</p>
+          
+          <h3>7. Modificaciones</h3>
+          <p>Nos reservamos el derecho de modificar estos terminos en cualquier momento. Los cambios entraran en vigor inmediatamente despues de su publicacion.</p>
+          
+          <h3>8. Contacto</h3>
+          <p>Para consultas relacionadas con estos terminos, puedes contactarnos a traves de nuestra pagina oficial.</p>
+        </div>
+        <button class="back-btn" onclick="hideTermsModal()" data-testid="button-close-terms">Cerrar</button>
+      </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-database-compat.js"></script>
+    
+    <script src="js/countries.js"></script>
+    <script src="js/firebase-config.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/matchmaking.js"></script>
+    <script src="js/game-sync.js"></script>
+    <script src="js/game-history.js"></script>
+    <script src="js/chat.js"></script>
+    <script src="js/chess-logic.js"></script>
+    <script src="js/ai.js"></script>
+    <script src="js/ui-controller.js"></script>
+    <script src="js/main.js"></script>
+  </body>
+</html>

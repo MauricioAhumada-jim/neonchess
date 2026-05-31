@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>NEON CHESS | Ajedrez Online Gratis - Partidas Instantáneas 2026</title>
+    <meta name="description" content="Juega ajedrez online en NEON CHESS. Comunidad global activa, motor de IA avanzado y partidas multijugador sin descargas. Mejora tu ELO hoy mismo!" />
+    <meta name="keywords" content="ajedrez online, jugar ajedrez gratis, ajedrez online gratis, chess online, juego de ajedrez, ajedrez contra computadora, ajedrez multijugador, ajedrez en linea, partidas de ajedrez, torneos de ajedrez, neon chess, ajedrez blitz, ajedrez rapido, ajedrez bullet, aprender ajedrez, estrategia ajedrez, ranking elo ajedrez" />
+
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Jersey+10&display=swap" as="style">
+
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://neon-chess.com/" />
+    <meta property="og:title" content="NEON CHESS - La Experiencia Definitiva de Ajedrez Online" />
+    <meta property="og:description" content="Partidas de ajedrez en vivo contra IA o rivales reales. Sin registros obligatorios. Entra y juega ahora!" />
+    <meta property="og:image" content="https://neon-chess.com/og-image.jpg" />
+    <meta property="og:locale" content="es_MX" />
+    <meta property="og:site_name" content="NEON CHESS" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="NEON CHESS - Ajedrez Online Gratis" />
+    <meta name="twitter:description" content="Juega ajedrez online contra IA o rivales reales. Sin descargas, 100% gratis." />
+    <meta name="twitter:image" content="https://neon-chess.com/og-image.jpg" />
+
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="https://neon-chess.com/" />
+    <link rel="icon" type="image/png" href="favicon.png" />
+
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "WebApplication",
+            "name": "NEON CHESS",
+            "alternateName": "Ajedrez Online Gratis",
+            "url": "https://neon-chess.com",
+            "description": "Plataforma de ajedrez online con motor de analisis avanzado y juego multijugador en tiempo real.",
+            "applicationCategory": "GameApplication",
+            "operatingSystem": "Any",
+            "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+            "genre": ["Strategy Game", "Board Game", "Chess"],
+            "inLanguage": "es-MX"
+          }
+        ]
+      }
+    </script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Italiana&family=Jersey+10&display=swap" rel="stylesheet" />
+    
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      body { font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif; background: #0a0a0a; color: #fff; overflow-x: hidden; }
+      .hero { min-height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; position: relative; padding: 20px; background: radial-gradient(ellipse at center, #1a0033 0%, #0a0a0a 100%); }
+      .grid-bg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-image: linear-gradient(rgba(255, 0, 255, 0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 255, 255, 0.03) 1px, transparent 1px); background-size: 50px 50px; animation: gridMove 20s linear infinite; pointer-events: none; }
+      @keyframes gridMove { 0% { transform: translate(0, 0); } 100% { transform: translate(50px, 50px); } }
+      .neon-lines { position: absolute; width: 100%; height: 100%; pointer-events: none; overflow: hidden; }
+      .line { position: absolute; background: linear-gradient(90deg, transparent, #ff00ff, transparent); height: 2px; width: 100%; animation: lineMove 8s linear infinite; }
+      .line:nth-child(1) { top: 20%; animation-delay: 0s; }
+      .line:nth-child(2) { top: 50%; animation-delay: 2s; background: linear-gradient(90deg, transparent, #00ffff, transparent); }
+      .line:nth-child(3) { top: 80%; animation-delay: 4s; }
+      @keyframes lineMove { 0% { transform: translateX(-100%); opacity: 0; } 50% { opacity: 1; } 100% { transform: translateX(100%); opacity: 0; } }
+      .logo { font-size: clamp(3rem, 10vw, 6rem); font-weight: 900; text-align: center; margin-bottom: 10px; position: relative; z-index: 2; letter-spacing: 0.2em; font-family: "Jersey 10", monospace; color: #fff; text-shadow: 0 0 10px #ff00ff, 0 0 20px #ff00ff, 0 0 40px #ff00ff, 2px 2px 0 #00ffff, -2px -2px 0 #ff00ff; animation: glitch 2s infinite, pixelPulse 3s ease-in-out infinite; }
+      .logo::before, .logo::after { content: "NEON CHESS"; position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
+      .logo::before { animation: glitchTop 1.5s infinite; clip-path: polygon(0 0, 100% 0, 100% 33%, 0 33%); text-shadow: -2px 0 #ff00ff, 2px 2px #00ffff; }
+      .logo::after { animation: glitchBottom 1.8s infinite reverse; clip-path: polygon(0 67%, 100% 67%, 100% 100%, 0 100%); text-shadow: 2px 0 #00ffff, -2px -2px #ff00ff; }
+      @keyframes glitch { 0%, 90%, 100% { transform: translate(0); filter: hue-rotate(0deg); } 20% { transform: translate(-2px, 2px); } 40% { transform: translate(2px, -2px); } 60% { transform: translate(-1px, 1px); } 80% { transform: translate(1px, -1px); filter: hue-rotate(10deg); } }
+      @keyframes glitchTop { 0%, 90%, 100% { transform: translate(0); } 10% { transform: translate(3px, -3px); } 20% { transform: translate(-3px, 3px); } 30% { transform: translate(0); } }
+      @keyframes glitchBottom { 0%, 90%, 100% { transform: translate(0); } 15% { transform: translate(-4px, 2px); } 25% { transform: translate(4px, -2px); } 35% { transform: translate(0); } }
+      @keyframes pixelPulse { 0%, 100% { text-shadow: 0 0 10px #ff00ff, 0 0 20px #ff00ff, 2px 2px 0 #00ffff, -2px -2px 0 #ff00ff; } 50% { text-shadow: 0 0 20px #ff00ff, 0 0 40px #ff00ff, 0 0 60px #ff00ff, 3px 3px 0 #00ffff, -3px -3px 0 #ff00ff; } }
+      .tagline { font-size: clamp(0.9rem, 2.5vw, 1.2rem); text-align: center; margin-bottom: 30px; color: #888; position: relative; z-index: 2; letter-spacing: 0.3em; text-transform: uppercase; }
+      .subtitle { font-size: clamp(1rem, 3vw, 1.5rem); text-align: center; margin-bottom: 50px; color: #00ffff; position: relative; z-index: 2; text-shadow: 0 0 10px #00ffff; max-width: 700px; }
+      .cta-container { position: relative; z-index: 2; margin-bottom: 40px; }
+      .cta-button { position: relative; padding: 25px 60px; font-size: clamp(1.2rem, 3vw, 2rem); font-weight: bold; color: #fff; background: linear-gradient(45deg, #ff00ff, #00ffff); border: none; border-radius: 50px; cursor: pointer; text-decoration: none; display: inline-block; overflow: hidden; transition: transform 0.3s ease; box-shadow: 0 0 20px rgba(255, 0, 255, 0.5), 0 0 40px rgba(0, 255, 255, 0.5), inset 0 0 20px rgba(255, 255, 255, 0.1); }
+      .cta-button::before { content: ""; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.3), transparent); transform: rotate(45deg); animation: shine 3s infinite; }
+      .cta-button::after { content: ""; position: absolute; right: 20px; top: 50%; transform: translateY(-50%); font-size: 1.5rem; animation: arrowBounce 1s ease-in-out infinite; }
+      @keyframes shine { 0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); } 100% { transform: translateX(100%) translateY(100%) rotate(45deg); } }
+      @keyframes arrowBounce { 0%, 100% { transform: translateY(-50%) translateX(0); } 50% { transform: translateY(-50%) translateX(5px); } }
+      .cta-button:hover { transform: scale(1.1); animation: buttonPulse 0.5s ease-in-out infinite; }
+      @keyframes buttonPulse { 0%, 100% { box-shadow: 0 0 20px rgba(255, 0, 255, 0.5), 0 0 40px rgba(0, 255, 255, 0.5); } 50% { box-shadow: 0 0 40px rgba(255, 0, 255, 0.8), 0 0 80px rgba(0, 255, 255, 0.8), 0 0 120px rgba(255, 0, 255, 0.5); } }
+      .cta-button:active { transform: scale(0.95); }
+      .stats-bar { display: flex; gap: 40px; justify-content: center; flex-wrap: wrap; position: relative; z-index: 2; }
+      .stat-item { text-align: center; }
+      .stat-number { font-size: clamp(1.5rem, 4vw, 2.5rem); font-weight: bold; color: #ff00ff; text-shadow: 0 0 20px #ff00ff; }
+      .stat-label { font-size: 0.9rem; color: #888; text-transform: uppercase; letter-spacing: 0.1em; }
+      .chess-pieces { position: absolute; font-size: 100px; opacity: 0.1; animation: float 6s ease-in-out infinite; pointer-events: none; }
+      .piece1 { top: 10%; left: 10%; animation-delay: 0s; color: #ff00ff; }
+      .piece2 { top: 20%; right: 15%; animation-delay: 1s; color: #00ffff; }
+      .piece3 { bottom: 15%; left: 15%; animation-delay: 2s; color: #ff00ff; }
+      .piece4 { bottom: 20%; right: 10%; animation-delay: 3s; color: #00ffff; }
+      .piece5 { top: 50%; left: 5%; animation-delay: 1.5s; color: #ff00ff; font-size: 80px; }
+      .piece6 { top: 60%; right: 8%; animation-delay: 2.5s; color: #00ffff; font-size: 80px; }
+      @keyframes float { 0%, 100% { transform: translateY(0px) rotate(0deg); } 50% { transform: translateY(-30px) rotate(10deg); } }
+      .game-modes { padding: 100px 20px; background: linear-gradient(180deg, #0a0a0a 0%, #1a0033 50%, #0a0a0a 100%); position: relative; }
+      .game-modes h2 { text-align: center; font-size: clamp(2rem, 5vw, 3rem); margin-bottom: 20px; color: #ff00ff; text-shadow: 0 0 20px #ff00ff; }
+      .section-subtitle { text-align: center; color: #888; margin-bottom: 60px; font-size: 1.1rem; }
+      .modes-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 25px; max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+      .mode-card { background: rgba(0, 0, 0, 0.6); border: 2px solid rgba(255, 0, 255, 0.3); border-radius: 20px; padding: 30px 20px; text-align: center; transition: all 0.3s ease; position: relative; overflow: hidden; display: flex; flex-direction: column; justify-content: space-between; }
+      .mode-card::before { content: ""; position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255, 0, 255, 0.1), transparent); transition: left 0.5s ease; }
+      .mode-card:hover::before { left: 100%; }
+      .mode-card:hover { transform: translateY(-10px) scale(1.05); border-color: #ff00ff; box-shadow: 0 20px 60px rgba(255, 0, 255, 0.4); }
+      .mode-icon { font-size: 3rem; margin-bottom: 15px; filter: drop-shadow(0 0 20px currentColor); }
+      .mode-card h3 { font-size: 1.3rem; margin-bottom: 12px; color: #00ffff; text-shadow: 0 0 10px #00ffff; }
+      .mode-card p { color: #ccc; line-height: 1.5; margin-bottom: 15px; font-size: 0.9rem; flex-grow: 1; }
+      .mode-button { background: linear-gradient(45deg, #ff00ff, #ff0080); border: none; padding: 10px 25px; border-radius: 25px; color: white; text-decoration: none; font-weight: bold; cursor: pointer; transition: all 0.3s ease; text-transform: uppercase; letter-spacing: 0.1em; font-size: 0.8rem; margin-top: auto; }
+      .mode-button:hover { transform: scale(1.1); box-shadow: 0 0 30px rgba(255, 0, 255, 0.6); }
+      .features { padding: 100px 20px; background: #0a0a0a; }
+      .features h2 { text-align: center; font-size: clamp(2rem, 5vw, 3rem); margin-bottom: 60px; color: #00ffff; text-shadow: 0 0 20px #00ffff; }
+      .feature-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 40px; max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+      .feature-card { background: rgba(0, 255, 255, 0.05); border: 2px solid rgba(0, 255, 255, 0.3); border-radius: 20px; padding: 40px 30px; text-align: center; transition: all 0.3s ease; position: relative; overflow: hidden; }
+      .feature-card::before { content: ""; position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(0, 255, 255, 0.1), transparent); transition: left 0.5s ease; }
+      .feature-card:hover::before { left: 100%; }
+      .feature-card:hover { transform: translateY(-10px); border-color: #00ffff; box-shadow: 0 10px 40px rgba(0, 255, 255, 0.3); }
+      .feature-icon { font-size: 3rem; margin-bottom: 20px; filter: drop-shadow(0 0 10px currentColor); }
+      .feature-card h3 { font-size: 1.5rem; margin-bottom: 15px; color: #ff00ff; }
+      .feature-card p { color: #ccc; line-height: 1.6; }
+      .testimonials { padding: 100px 20px; background: linear-gradient(180deg, #0a0a0a 0%, #1a0033 100%); }
+      .testimonials h2 { text-align: center; font-size: clamp(2rem, 5vw, 3rem); margin-bottom: 60px; color: #ff00ff; text-shadow: 0 0 20px #ff00ff; }
+      .testimonial-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+      .testimonial-card { background: rgba(0, 0, 0, 0.5); border: 1px solid rgba(255, 0, 255, 0.2); border-radius: 15px; padding: 30px; position: relative; }
+      .testimonial-card::before { content: '"'; position: absolute; top: -10px; left: 20px; font-size: 5rem; color: #ff00ff; opacity: 0.2; }
+      .testimonial-text { color: #ccc; line-height: 1.6; margin-bottom: 20px; font-style: italic; }
+      .testimonial-author { color: #00ffff; font-weight: bold; }
+      .testimonial-rating { color: #ffcc00; margin-top: 10px; }
+      .cta-section { padding: 100px 20px; text-align: center; background: radial-gradient(ellipse at center, #1a0033 0%, #0a0a0a 100%); position: relative; }
+      .cta-section h2 { font-size: clamp(2rem, 5vw, 3.5rem); margin-bottom: 30px; color: #fff; text-shadow: 0 0 30px #ff00ff; }
+      .cta-section p { font-size: 1.2rem; color: #00ffff; margin-bottom: 40px; }
+      
+      .faq-section { padding: 80px 20px; background: #0a0a0a; border-top: 1px solid rgba(0, 255, 255, 0.1); }
+      .faq-container { max-width: 800px; margin: 0 auto; }
+      .faq-item { margin-bottom: 30px; padding: 20px; border-left: 3px solid #00ffff; background: rgba(0, 255, 255, 0.02); }
+      .faq-item h3 { color: #00ffff; margin-bottom: 10px; font-size: 1.2rem; }
+      .faq-item p { color: #ccc; line-height: 1.6; }
+
+      footer { background: #0a0a0a; padding: 60px 20px 30px; border-top: 1px solid rgba(255, 0, 255, 0.2); }
+      .footer-content { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 40px; margin-bottom: 40px; }
+      .footer-section h4 { color: #ff00ff; margin-bottom: 20px; font-size: 1.2rem; }
+      .footer-section ul { list-style: none; }
+      .footer-section a { color: #888; text-decoration: none; line-height: 2; transition: color 0.3s ease; }
+      .footer-section a:hover { color: #00ffff; }
+      .footer-bottom { text-align: center; padding-top: 30px; border-top: 1px solid rgba(255, 0, 255, 0.1); color: #666; }
+      @media (max-width: 768px) { .cta-button { padding: 20px 40px; } .chess-pieces { font-size: 60px; } .stats-bar { gap: 20px; } .logo { letter-spacing: 0.05em; } .modes-grid { grid-template-columns: 1fr; } }
+      @media (max-width: 1024px) and (min-width: 769px) { .modes-grid { grid-template-columns: repeat(2, 1fr); } }
+    </style>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-D4DB63JZEP"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-D4DB63JZEP');
+</script>
+  </head>
+  <body>
+    <header class="hero">
+      <div class="grid-bg"></div>
+      <div class="neon-lines">
+        <div class="line"></div><div class="line"></div><div class="line"></div>
+      </div>
+      <div class="chess-pieces piece1" aria-hidden="true">&#9812;</div>
+      <div class="chess-pieces piece2" aria-hidden="true">&#9819;</div>
+      <div class="chess-pieces piece3" aria-hidden="true">&#9820;</div>
+      <div class="chess-pieces piece4" aria-hidden="true">&#9822;</div>
+      <div class="chess-pieces piece5" aria-hidden="true">&#9821;</div>
+      <div class="chess-pieces piece6" aria-hidden="true">&#9823;</div>
+
+      <h1 class="logo">NEON CHESS</h1>
+      <p class="tagline">La Nueva Era del Ajedrez Online</p>
+      <p class="subtitle">
+        Perfecciona tu tactica contra nuestro motor de analisis o compite en tiempo real. 
+        Velocidad extrema, sin anuncios intrusivos y 100% accesible desde tu navegador.
+      </p>
+
+      <div class="cta-container">
+        <a href="play.html" class="cta-button" title="Comenzar partida de ajedrez ahora" data-testid="button-play-now">JUGAR AHORA</a>
+      </div>
+
+      <div class="stats-bar">
+        <div class="stat-item">
+          <div class="stat-number">Comunidad</div>
+          <div class="stat-label">Global</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number">Partidas</div>
+          <div class="stat-label">24/7</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number">Paises</div>
+          <div class="stat-label">Todos</div>
+        </div>
+      </div>
+    </header>
+
+    <section class="game-modes" id="jugar">
+      <h2>Experiencia de Juego Optimizada</h2>
+      <p class="section-subtitle">Diferentes ritmos para cada tipo de estratega</p>
+      <div class="modes-grid">
+        <article class="mode-card">
+          <div class="mode-icon" aria-hidden="true">&#129302;</div>
+          <h3>Motor de Analisis (IA)</h3>
+          <p>
+            Enfrentate a una IA basada en Stockfish con niveles ajustables. 
+            Ideal para perfeccionar aperturas o analizar posiciones criticas sin presion.
+          </p>
+          <a href="play.html" class="mode-button" aria-label="Jugar ajedrez contra inteligencia artificial" data-testid="button-train-ai">Entrenar vs IA</a>
+        </article>
+
+        <article class="mode-card">
+          <div class="mode-icon" aria-hidden="true">&#9876;</div>
+          <h3>Duelos Multijugador</h3>
+          <p>
+            Sistema de emparejamiento inteligente. Encuentra oponentes de tu nivel 
+            en segundos o crea salas privadas para retar a tus amigos directamente.
+          </p>
+          <a href="play.html" class="mode-button" aria-label="Buscar rival para partida multijugador" data-testid="button-challenge">Desafiar Ahora</a>
+        </article>
+
+        <article class="mode-card">
+          <div class="mode-icon" aria-hidden="true">&#9889;</div>
+          <h3>Blitz & Bullet</h3>
+          <p>
+            Para los amantes de la velocidad: controles de tiempo de 1, 3 y 5 minutos. 
+            Demuestra tus reflejos y tu capacidad de decision bajo maxima presion.
+          </p>
+          <button class="mode-button" aria-label="Proximamente ajedrez rapido" style="opacity: 0.7; cursor: not-allowed" data-testid="button-blitz">Muy pronto</button>
+        </article>
+
+        <article class="mode-card">
+          <div class="mode-icon" aria-hidden="true">&#127942;</div>
+          <h3>Arena Competitiva</h3>
+          <p>
+            Participa en eventos puntuables y torneos eliminatorios. 
+            Sube en el ranking global y obtén insignias de maestría exclusivas en la plataforma.
+          </p>
+          <button class="mode-button" aria-label="Proximamente torneos" style="opacity: 0.7; cursor: not-allowed" data-testid="button-arena">En desarrollo</button>
+        </article>
+      </div>
+    </section>
+
+    <section class="features">
+      <h2>Caracteristicas Profesionales</h2>
+      <div class="feature-grid">
+        <article class="feature-card">
+          <div class="feature-icon" aria-hidden="true">&#128218;</div>
+          <h3>Academia de Ajedrez</h3>
+          <p>Libreria de tactica y finales para llevar tu juego al siguiente nivel mediante ejercicios guiados.</p>
+        </article>
+        <article class="feature-card">
+          <div class="feature-icon" aria-hidden="true">&#128190;</div>
+          <h3>Analisis Post-Partida</h3>
+          <p>Revisa tu historial completo. Estudia tus errores y aciertos con nuestro visualizador de movimientos.</p>
+        </article>
+        <article class="feature-card">
+          <div class="feature-icon" aria-hidden="true">&#128101;</div>
+          <h3>Entorno Social</h3>
+          <p>Conecta con otros entusiastas, comparte estrategias y disfruta de un ambiente competitivo saludable.</p>
+        </article>
+        <article class="feature-card">
+          <div class="feature-icon" aria-hidden="true">&#128241;</div>
+          <h3>Tecnologia Multiplataforma</h3>
+          <p>Juega en cualquier dispositivo con sincronizacion total. Rendimiento fluido incluso en conexiones moviles.</p>
+        </article>
+        <article class="feature-card">
+          <div class="feature-icon" aria-hidden="true">&#127919;</div>
+          <h3>Tablero de Analisis</h3>
+          <p>Herramienta libre para explorar variantes, preparar celadas o simplemente practicar libremente.</p>
+        </article>
+        <article class="feature-card">
+          <div class="feature-icon" aria-hidden="true">&#127873;</div>
+          <h3>Filosofia Open Access</h3>
+          <p>Sin muros de pago. Todas las funciones de analisis y juego estan disponibles para todos los usuarios.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="cta-section">
+      <h2>Listo para el siguiente movimiento?</h2>
+      <p>Unete a miles de jugadores y pon a prueba tu intelecto en NEON CHESS.</p>
+      <a href="play.html" class="cta-button" aria-label="Comenzar a jugar ajedrez online gratis" data-testid="button-start-game">INICIAR PARTIDA</a>
+    </section>
+
+    <section class="faq-section">
+      <div class="faq-container">
+        <h2 style="text-align: center; color: #ff00ff; margin-bottom: 40px;">Preguntas Frecuentes</h2>
+        <div class="faq-item">
+          <h3>Por que NEON CHESS es gratuito?</h3>
+          <p>Creemos en el ajedrez como una herramienta educativa universal. Nuestra plataforma se sostiene gracias a la comunidad, permitiendo acceso libre a todas las herramientas.</p>
+        </div>
+        <div class="faq-item">
+          <h3>Que nivel de dificultad tiene la IA?</h3>
+          <p>Utilizamos algoritmos ajustables que van desde un nivel principiante (apto para ninos y novatos) hasta niveles que desafian a jugadores titulados.</p>
+        </div>
+        <div class="faq-item">
+          <h3>Es compatible con mi smartphone?</h3>
+          <p>Si, la interfaz esta disenada bajo el estandar Mobile-First, garantizando que las piezas y el tablero se adapten perfectamente a cualquier pantalla tactil.</p>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <div class="footer-content">
+        <div class="footer-section">
+          <h4>NEON CHESS - Ajedrez Online</h4>
+          <ul>
+            <li><a href="#about" title="Sobre NEON CHESS">Sobre Nosotros</a></li>
+            <li><a href="#blog" title="Blog de ajedrez">Blog de Ajedrez</a></li>
+          </ul>
+        </div>
+        <div class="footer-section">
+          <h4>Jugar Ajedrez Online</h4>
+          <ul>
+            <li><a href="play.html" title="Jugar ajedrez contra IA">Contra IA</a></li>
+            <li><a href="play.html" title="Ajedrez multijugador">Multijugador</a></li>
+            <li><a href="play.html" title="Torneos de ajedrez proximamente">Torneos</a></li>
+          </ul>
+        </div>
+        <div class="footer-section">
+          <h4>Aprender Ajedrez</h4>
+          <ul>
+            <li><a href="tutorial.html" title="Tutorial completo de ajedrez">Tutorial Completo</a></li>
+            <li><a href="tutorial.html#aperturas" title="Aperturas de ajedrez">Aperturas</a></li>
+            <li><a href="tutorial.html#tacticas" title="Tactica en ajedrez">Tacticas</a></li>
+          </ul>
+        </div>
+        <div class="footer-section">
+          <h4>Ayuda y Soporte</h4>
+          <ul>
+            <li><a href="#help" title="Centro de ayuda">Centro de Ayuda</a></li>
+            <li><a href="#contact" title="Contactar soporte">Contacto</a></li>
+            <li><a href="#privacy" title="Politica de privacidad">Privacidad</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>2026 NEON CHESS. El futuro del ajedrez online.</p>
+      </div>
+    </footer>
+  </body>
+</html>
