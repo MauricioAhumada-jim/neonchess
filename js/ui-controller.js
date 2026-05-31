@@ -239,12 +239,56 @@ function selectPromotionPiece(selectedPiece) {
   }
 }
 
+function startFireworks() {
+  const container = document.getElementById('fireworks');
+  if (!container) return;
+  container.innerHTML = '';
+  
+  const colors = ['#00ffff', '#ff00ff', '#00ff00', '#ffff00', '#ffffff'];
+  const particleCount = 80;
+  
+  for (let i = 0; i < particleCount; i++) {
+    const particle = document.createElement('div');
+    particle.className = 'firework';
+    
+    // Posición aleatoria de inicio
+    const left = Math.random() * 100;
+    const top = Math.random() * -30; // Empezar justo por encima del área visible del modal
+    particle.style.left = left + '%';
+    particle.style.top = top + 'px';
+    
+    // Colores cyberpunk vibrantes con sombreado de neón
+    const color = colors[Math.floor(Math.random() * colors.length)];
+    particle.style.backgroundColor = color;
+    particle.style.boxShadow = `0 0 10px ${color}, 0 0 20px ${color}`;
+    
+    // Retraso y duración aleatoria de caída
+    const delay = Math.random() * 2.5;
+    const duration = 2 + Math.random() * 2;
+    particle.style.animationDelay = delay + 's';
+    particle.style.animationDuration = duration + 's';
+    
+    // Tamaño aleatorio para dar profundidad y efecto pixelado
+    const size = 3 + Math.random() * 4; // de 3px a 7px
+    particle.style.width = size + 'px';
+    particle.style.height = size + 'px';
+    
+    container.appendChild(particle);
+  }
+}
+
+function stopFireworks() {
+  const container = document.getElementById('fireworks');
+  if (container) container.innerHTML = '';
+}
+
 function showCheckmateModal(winner) {
   const modal = document.getElementById('checkmate-modal');
   const winnerText = document.getElementById('checkmate-winner');
   if (!modal || !winnerText) return;
   winnerText.textContent = `${winner} Ganan!`;
   modal.classList.add('active');
+  startFireworks();
   
   if (gameMode === 'online') {
     setOutcomeRecorded(true);
@@ -278,6 +322,7 @@ function showStalemateModal() {
   if (title) title.textContent = 'TABLAS';
   winnerText.textContent = 'La partida termino en empate';
   modal.classList.add('active');
+  startFireworks();
   
   if (gameMode === 'online') {
     setOutcomeRecorded(true);
@@ -290,6 +335,7 @@ function showStalemateModal() {
 function closeCheckmateModal() {
   const modal = document.getElementById('checkmate-modal');
   if (modal) modal.classList.remove('active');
+  stopFireworks();
   
   const title = document.getElementById('checkmate-title');
   if (title) title.textContent = 'JAQUE MATE';
@@ -304,6 +350,7 @@ function closeCheckmateModal() {
 function closeCheckmateModalOnly() {
   const modal = document.getElementById('checkmate-modal');
   if (modal) modal.classList.remove('active');
+  stopFireworks();
 }
 
 function showGameModeModal() {
