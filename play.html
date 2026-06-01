@@ -38,10 +38,10 @@
         <div class="difficulty-section" id="difficulty-section">
           <h3>Selecciona Dificultad:</h3>
           <div class="difficulty-buttons">
-            <button class="difficulty-btn easy" onclick="selectAI('easy')" data-testid="button-easy">Facil</button>
-            <button class="difficulty-btn medium" onclick="selectAI('medium')" data-testid="button-medium">Media</button>
-            <button class="difficulty-btn hard" onclick="selectAI('hard')" data-testid="button-hard">Dificil</button>
-            <button class="difficulty-btn extreme" onclick="selectAI('extreme')" data-testid="button-extreme">Extremo</button>
+            <button class="difficulty-btn easy" onclick="selectAI('easy')" data-testid="button-easy">Facil (800 ELO)</button>
+            <button class="difficulty-btn medium" onclick="selectAI('medium')" data-testid="button-medium">Media (1200 ELO)</button>
+            <button class="difficulty-btn hard" onclick="selectAI('hard')" data-testid="button-hard">Dificil (1600 ELO)</button>
+            <button class="difficulty-btn extreme" onclick="selectAI('extreme')" data-testid="button-extreme">Extremo (2000 ELO)</button>
           </div>
           <button class="back-btn" onclick="hideDifficulty()" data-testid="button-back-difficulty">Volver</button>
         </div>
@@ -126,6 +126,7 @@
           <div class="player-avatar" style="display: flex; align-items: center; gap: 10px;">
             <span id="player-flag" style="font-size: 1.8rem;"></span>
             <span id="player-name" style="font-size: 1.3rem; font-weight: bold; color: #00ffff; font-family: 'Orbitron', monospace; text-shadow: 0 0 10px rgba(0, 255, 255, 0.6);">Jugador</span>
+            <span id="player-elo" style="font-size: 0.95rem; font-weight: bold; color: #ffff00; font-family: 'Orbitron', monospace; text-shadow: 0 0 10px rgba(255, 255, 0, 0.5); padding: 2px 8px; background: rgba(255, 255, 0, 0.1); border: 1px solid rgba(255, 255, 0, 0.3); border-radius: 6px;">1200 ELO</span>
           </div>
           <div class="player-stats" style="display: flex; align-items: center; gap: 10px; margin-top: 5px;">
             <span class="stat-item" style="display: flex; align-items: center; gap: 4px; color: #00ffff; font-family: 'Orbitron', monospace; font-size: 0.85rem; padding: 4px 10px; background: rgba(0, 255, 255, 0.1); border: 1px solid rgba(0, 255, 255, 0.3); border-radius: 20px;"><span class="stat-icon">&#x1F3C6;</span> <span id="player-wins">0</span> V</span>

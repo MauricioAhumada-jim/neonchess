@@ -64,6 +64,7 @@ function startMatchmaking() {
         losses: profile.losses || 0,
         draws: profile.draws || 0,
         timeControl: selectedTimeControl,
+        elo: profile.elo || 1200,
         timestamp: firebase.database.ServerValue.TIMESTAMP
       });
       
@@ -119,9 +120,16 @@ function createGame(gameId, player1Uid, player2Uid, player1Profile, player2Data,
         username: player1Profile.username,
         country: player1Profile.country,
         countryFlag: player1Profile.countryFlag,
-        wins: player1Profile.wins || 0
+        wins: player1Profile.wins || 0,
+        elo: player1Profile.elo || 1200
       },
-      [player2Uid]: player2Data
+      [player2Uid]: {
+        username: player2Data.username,
+        country: player2Data.country,
+        countryFlag: player2Data.countryFlag,
+        wins: player2Data.wins || 0,
+        elo: player2Data.elo || 1200
+      }
     },
     timeControl: timeControl,
     whiteTime: timeControl,
@@ -217,14 +225,14 @@ function startOnlineGame() {
   
   if (opponentData) {
     document.getElementById('opponent-flag').textContent = opponentData.countryFlag || '';
-    document.getElementById('opponent-name').textContent = opponentData.username || 'Oponente';
+    document.getElementById('opponent-name').textContent = `${opponentData.username || 'Oponente'} (${opponentData.elo || 1200})`;
     document.getElementById('opponent-stats').textContent = (opponentData.wins || 0) + 'V / ' + (opponentData.losses || 0) + 'D / ' + (opponentData.draws || 0) + 'E';
   }
   
   const profile = getUserProfile();
   if (profile) {
     document.getElementById('my-flag').textContent = profile.countryFlag || '';
-    document.getElementById('my-name').textContent = profile.username || 'Tu';
+    document.getElementById('my-name').textContent = `${profile.username || 'Tu'} (${profile.elo || 1200})`;
     document.getElementById('my-stats').textContent = (profile.wins || 0) + 'V / ' + (profile.losses || 0) + 'D / ' + (profile.draws || 0) + 'E';
   }
   
@@ -309,6 +317,10 @@ function getCurrentGameId() {
 
 function getOpponentUid() {
   return opponentUid;
+}
+
+function getOpponentData() {
+  return opponentData;
 }
 
 let privateGameRef = null;

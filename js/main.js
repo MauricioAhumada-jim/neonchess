@@ -32,6 +32,11 @@ function selectAI(difficulty) {
   hideGameModeModal();
   const diff = document.getElementById('difficulty-section');
   if (diff) diff.classList.remove('active');
+  
+  if (typeof setupAIHeaders === 'function') {
+    setupAIHeaders();
+  }
+  
   addChatMessage('Sistema', `Modo vs IA seleccionado - Dificultad: ${difficulty}`);
   if (currentPlayer === 'black') setTimeout(() => makeAIMove(), 300);
 }

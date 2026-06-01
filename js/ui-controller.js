@@ -294,13 +294,29 @@ function showCheckmateModal(winner) {
     setOutcomeRecorded(true);
     const playerCol = getPlayerColor();
     const isWin = (winner === 'Blancas' && playerCol === 'white') || (winner === 'Negras' && playerCol === 'black');
+    const oppProfile = getOpponentData();
+    const oppElo = oppProfile ? (oppProfile.elo || 1200) : 1200;
     
     if (isWin) {
-      updateUserWins();
+      updateUserWins(oppElo);
       saveGameToHistory('win', getOpponentDataForHistory(), getGameMoves(), playerCol);
     } else {
-      updateUserLosses();
+      updateUserLosses(oppElo);
       saveGameToHistory('loss', getOpponentDataForHistory(), getGameMoves(), playerCol);
+    }
+  } else if (gameMode === 'ai') {
+    const aiEloMap = {
+      easy: 800,
+      medium: 1200,
+      hard: 1600,
+      extreme: 2000
+    };
+    const aiElo = aiEloMap[aiDifficulty] || 1200;
+    const isWin = (winner === 'Blancas');
+    if (isWin) {
+      updateUserWins(aiElo);
+    } else {
+      updateUserLosses(aiElo);
     }
   }
 }
@@ -326,9 +342,20 @@ function showStalemateModal() {
   
   if (gameMode === 'online') {
     setOutcomeRecorded(true);
-    updateUserDraws();
     const playerCol = getPlayerColor();
+    const oppProfile = getOpponentData();
+    const oppElo = oppProfile ? (oppProfile.elo || 1200) : 1200;
+    updateUserDraws(oppElo);
     saveGameToHistory('draw', getOpponentDataForHistory(), getGameMoves(), playerCol);
+  } else if (gameMode === 'ai') {
+    const aiEloMap = {
+      easy: 800,
+      medium: 1200,
+      hard: 1600,
+      extreme: 2000
+    };
+    const aiElo = aiEloMap[aiDifficulty] || 1200;
+    updateUserDraws(aiElo);
   }
 }
 
@@ -614,4 +641,47 @@ function showTermsModal() {
 function hideTermsModal() {
   const modal = document.getElementById('terms-modal');
   if (modal) modal.classList.remove('active');
+}
+
+function setupAIHeaders() {
+  const profile = getUserProfile();
+  
+  const aiEloMap = {
+    easy: 800,
+    medium: 1200,
+    hard: 1600,
+    extreme: 2000
+  };
+  const aiNamesMap = {
+    easy: 'Fácil',
+    medium: 'Media',
+    hard: 'Difícil',
+    extreme: 'Extrema'
+  };
+  
+  const aiElo = aiEloMap[aiDifficulty] || 1200;
+  const aiName = aiNamesMap[aiDifficulty] || 'Media';
+  
+  const header = document.getElementById('game-header');
+  const footer = document.getElementById('game-footer');
+  if (header) header.style.display = 'flex';
+  if (footer) footer.style.display = 'flex';
+  
+  // Set AI details
+  const oppFlag = document.getElementById('opponent-flag');
+  const oppName = document.getElementById('opponent-name');
+  const oppStats = document.getElementById('opponent-stats');
+  if (oppFlag) oppFlag.textContent = '🤖';
+  if (oppName) oppName.textContent = `Computadora ${aiName} (${aiElo})`;
+  if (oppStats) oppStats.textContent = 'IA offline';
+  
+  // Set player details
+  const myFlag = document.getElementById('my-flag');
+  const myName = document.getElementById('my-name');
+  const myStats = document.getElementById('my-stats');
+  const eloVal = profile ? (profile.elo || 1200) : 1200;
+  
+  if (myFlag) myFlag.textContent = profile ? (profile.countryFlag || '👤') : '👤';
+  if (myName) myName.textContent = profile ? `${profile.username} (${eloVal})` : `Invitado (${eloVal})`;
+  if (myStats) myStats.textContent = profile ? `${profile.wins || 0}V / ${profile.losses || 0}D / ${profile.draws || 0}E` : 'Local';
 }

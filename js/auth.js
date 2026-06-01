@@ -132,12 +132,14 @@ function refreshLobbyStats() {
   const drawsEl = document.getElementById('player-draws');
   const flagEl = document.getElementById('player-flag');
   const nameEl = document.getElementById('player-name');
+  const eloEl = document.getElementById('player-elo');
   
   if (winsEl) winsEl.textContent = userProfile.wins || 0;
   if (lossesEl) lossesEl.textContent = userProfile.losses || 0;
   if (drawsEl) drawsEl.textContent = userProfile.draws || 0;
   if (flagEl) flagEl.textContent = userProfile.countryFlag || '';
   if (nameEl) nameEl.textContent = userProfile.username || 'Jugador';
+  if (eloEl) eloEl.textContent = `${userProfile.elo || 1200} ELO`;
 }
 
 function saveProfile() {
@@ -162,6 +164,7 @@ function saveProfile() {
     wins: 0,
     losses: 0,
     draws: 0,
+    elo: 1200,
     createdAt: Date.now()
   };
   
@@ -214,35 +217,84 @@ function getUserProfile() {
   return userProfile;
 }
 
-function updateUserWins() {
+function calculateNewElo(playerElo, opponentElo, actualScore, kFactor = 32) {
+  const expectedScore = 1 / (1 + Math.pow(10, (opponentElo - playerElo) / 400));
+  return Math.round(playerElo + kFactor * (actualScore - expectedScore));
+}
+
+function updateUserWins(opponentElo = null) {
   if (!userProfile) return;
   userProfile.wins = (userProfile.wins || 0) + 1;
   
   const db = getDatabase();
+  const oldElo = userProfile.elo || 1200;
+  let newElo = oldElo;
+  
+  if (opponentElo !== null) {
+    newElo = calculateNewElo(oldElo, opponentElo, 1);
+    userProfile.elo = newElo;
+    addChatMessage('Sistema', `¡Tu ELO ha cambiado de ${oldElo} a ${newElo}! (+${newElo - oldElo})`);
+  }
+  
   if (db && currentUser) {
-    db.ref('users/' + currentUser.uid + '/wins').set(userProfile.wins);
+    const updates = {};
+    updates['wins'] = userProfile.wins;
+    if (opponentElo !== null) {
+      updates['elo'] = newElo;
+    }
+    db.ref('users/' + currentUser.uid).update(updates);
   }
   refreshLobbyStats();
 }
 
-function updateUserLosses() {
+function updateUserLosses(opponentElo = null) {
   if (!userProfile) return;
   userProfile.losses = (userProfile.losses || 0) + 1;
   
   const db = getDatabase();
+  const oldElo = userProfile.elo || 1200;
+  let newElo = oldElo;
+  
+  if (opponentElo !== null) {
+    newElo = calculateNewElo(oldElo, opponentElo, 0);
+    userProfile.elo = newElo;
+    addChatMessage('Sistema', `¡Tu ELO ha cambiado de ${oldElo} a ${newElo}! (${newElo - oldElo})`);
+  }
+  
   if (db && currentUser) {
-    db.ref('users/' + currentUser.uid + '/losses').set(userProfile.losses);
+    const updates = {};
+    updates['losses'] = userProfile.losses;
+    if (opponentElo !== null) {
+      updates['elo'] = newElo;
+    }
+    db.ref('users/' + currentUser.uid).update(updates);
   }
   refreshLobbyStats();
 }
 
-function updateUserDraws() {
+function updateUserDraws(opponentElo = null) {
   if (!userProfile) return;
   userProfile.draws = (userProfile.draws || 0) + 1;
   
   const db = getDatabase();
+  const oldElo = userProfile.elo || 1200;
+  let newElo = oldElo;
+  
+  if (opponentElo !== null) {
+    newElo = calculateNewElo(oldElo, opponentElo, 0.5);
+    userProfile.elo = newElo;
+    const diff = newElo - oldElo;
+    const sign = diff >= 0 ? '+' : '';
+    addChatMessage('Sistema', `¡Tu ELO ha cambiado de ${oldElo} a ${newElo}! (${sign}${diff})`);
+  }
+  
   if (db && currentUser) {
-    db.ref('users/' + currentUser.uid + '/draws').set(userProfile.draws);
+    const updates = {};
+    updates['draws'] = userProfile.draws;
+    if (opponentElo !== null) {
+      updates['elo'] = newElo;
+    }
+    db.ref('users/' + currentUser.uid).update(updates);
   }
   refreshLobbyStats();
 }

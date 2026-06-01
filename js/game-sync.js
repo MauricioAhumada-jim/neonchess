@@ -207,8 +207,11 @@ function initGameSync() {
           countryFlag: document.getElementById('opponent-flag')?.textContent || ''
         };
         
+        const opponentProfile = getOpponentData();
+        const oppElo = opponentProfile ? (opponentProfile.elo || 1200) : 1200;
+        
         if (isWinner) {
-          updateUserWins();
+          updateUserWins(oppElo);
           saveGameToHistory('win', oppData, getGameMoves(), getPlayerColor());
           
           if (status === 'resigned') {
@@ -225,7 +228,7 @@ function initGameSync() {
           
           showGameEndModal(true, status);
         } else {
-          updateUserLosses();
+          updateUserLosses(oppElo);
           saveGameToHistory('loss', oppData, getGameMoves(), getPlayerColor());
           
           if (status === 'resigned') {
