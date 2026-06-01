@@ -1,6 +1,11 @@
 <!DOCTYPE html>
 <html lang="es">
   <head>
+    <script>
+      if (window.location.hostname === 'localhost' || window.location.protocol === 'capacitor:' || window.Capacitor || typeof Capacitor !== 'undefined') {
+        window.location.replace('play.html');
+      }
+    </script>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
