@@ -246,8 +246,10 @@ function resignGame() {
   
   const db = getDatabase();
   if (db && currentGameId) {
-    db.ref('games/' + currentGameId + '/status').set('resigned');
-    db.ref('games/' + currentGameId + '/winner').set(playerColor === 'white' ? 'black' : 'white');
+    db.ref('games/' + currentGameId).update({
+      status: 'resigned',
+      winner: playerColor === 'white' ? 'black' : 'white'
+    });
   }
   
   endOnlineGame(true);

@@ -453,8 +453,10 @@ function syncAbandon() {
   if (!db || !gameId) return;
   
   const gameRef = db.ref('games/' + gameId);
-  gameRef.child('status').set('abandoned');
-  gameRef.child('winner').set(getPlayerColor() === 'white' ? 'black' : 'white');
+  gameRef.update({
+    status: 'abandoned',
+    winner: getPlayerColor() === 'white' ? 'black' : 'white'
+  });
 }
 
 function syncCheckmate(winnerColor) {
@@ -464,8 +466,10 @@ function syncCheckmate(winnerColor) {
   if (!db || !gameId) return;
   
   const gameRef = db.ref('games/' + gameId);
-  gameRef.child('status').set('checkmate');
-  gameRef.child('winner').set(winnerColor);
+  gameRef.update({
+    status: 'checkmate',
+    winner: winnerColor
+  });
 }
 
 function cleanupGameSync() {
