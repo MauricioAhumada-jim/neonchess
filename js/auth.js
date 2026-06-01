@@ -84,27 +84,7 @@ function loginWithGoogle() {
     });
 }
 
-function loginAsGuest() {
-  hideLoginModal();
-  simulateGoogleLogin();
-}
 
-function simulateGoogleLogin() {
-  let savedDemoUid = localStorage.getItem('neonchess_demo_uid');
-  if (!savedDemoUid) {
-    savedDemoUid = 'demo_' + Math.random().toString(36).substr(2, 9);
-    localStorage.setItem('neonchess_demo_uid', savedDemoUid);
-  }
-  
-  currentUser = {
-    uid: savedDemoUid,
-    displayName: 'DemoPlayer',
-    email: 'demo@neochess.com',
-    photoURL: null
-  };
-  hideLoginModal();
-  checkUserProfile();
-}
 
 function checkUserProfile() {
   const db = getDatabase();
