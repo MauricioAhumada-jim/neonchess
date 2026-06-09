@@ -9,6 +9,8 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
 
     steps:
       - name: Checkout Repository
@@ -49,7 +51,7 @@ jobs:
           ./gradlew bundleRelease
 
       - name: Sign Release APK
-        if: ${{ secrets.SIGNING_KEY != '' }}
+        if: ${{ env.SIGNING_KEY != '' }}
         uses: r0adkll/sign-android-release@v1
         id: sign_apk
         with:
@@ -60,7 +62,7 @@ jobs:
           keyPassword: ${{ secrets.KEY_PASSWORD }}
 
       - name: Sign Release AAB
-        if: ${{ secrets.SIGNING_KEY != '' }}
+        if: ${{ env.SIGNING_KEY != '' }}
         uses: r0adkll/sign-android-release@v1
         id: sign_aab
         with:
@@ -71,7 +73,7 @@ jobs:
           keyPassword: ${{ secrets.KEY_PASSWORD }}
 
       - name: Auto-Generate Keystore and Sign (If No Secrets Configured)
-        if: ${{ secrets.SIGNING_KEY == '' }}
+        if: ${{ env.SIGNING_KEY == '' }}
         run: |
           if [ -f "android/app/neonchess.keystore" ]; then
             echo "Found existing keystore in repository. Reusing it."
@@ -95,7 +97,7 @@ jobs:
           fi
 
       - name: Upload Signing Keystore Backup
-        if: ${{ secrets.SIGNING_KEY == '' }}
+        if: ${{ env.SIGNING_KEY == '' }}
         uses: actions/upload-artifact@v4
         with:
           name: app-signing-keystore-backup
