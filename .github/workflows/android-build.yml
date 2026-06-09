@@ -70,6 +70,37 @@ jobs:
           keyStorePassword: ${{ secrets.KEYSTORE_PASSWORD }}
           keyPassword: ${{ secrets.KEY_PASSWORD }}
 
+      - name: Auto-Generate Keystore and Sign (If No Secrets Configured)
+        if: ${{ secrets.SIGNING_KEY == '' }}
+        run: |
+          if [ -f "android/app/neonchess.keystore" ]; then
+            echo "Found existing keystore in repository. Reusing it."
+          else
+            echo "No keystore found. Generating new keystore."
+            keytool -genkey -v -keystore android/app/neonchess.keystore -alias neonchess-key -keyalg RSA -keysize 2048 -validity 10000 -storepass neonchess123 -keypass neonchess123 -dname "CN=Neon Chess, O=Neon Chess, C=US"
+          fi
+          
+          # Sign APK
+          APK_FILE=$(find android/app/build/outputs/apk/release/ -name "*.apk" | head -n 1)
+          if [ ! -z "$APK_FILE" ]; then
+            jarsigner -verbose -sigalg SHA256withRSA -digestalg SHA256 -keystore android/app/neonchess.keystore -storepass neonchess123 -keypass neonchess123 "$APK_FILE" neonchess-key
+            echo "Signed APK successfully: $APK_FILE"
+          fi
+          
+          # Sign AAB
+          AAB_FILE=$(find android/app/build/outputs/bundle/release/ -name "*.aab" | head -n 1)
+          if [ ! -z "$AAB_FILE" ]; then
+            jarsigner -verbose -sigalg SHA256withRSA -digestalg SHA256 -keystore android/app/neonchess.keystore -storepass neonchess123 -keypass neonchess123 "$AAB_FILE" neonchess-key
+            echo "Signed AAB successfully: $AAB_FILE"
+          fi
+
+      - name: Upload Signing Keystore Backup
+        if: ${{ secrets.SIGNING_KEY == '' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-signing-keystore-backup
+          path: android/app/neonchess.keystore
+
       - name: Upload Release APK
         uses: actions/upload-artifact@v4
         with:
@@ -83,3 +114,4 @@ jobs:
           name: app-release-aab
           path: android/app/build/outputs/bundle/release/*.aab
           if-no-files-found: error
+
