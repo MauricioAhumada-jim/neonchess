@@ -48,6 +48,28 @@ jobs:
           cd android
           ./gradlew bundleRelease
 
+      - name: Sign Release APK
+        if: ${{ secrets.SIGNING_KEY != '' }}
+        uses: r0adkll/sign-android-release@v1
+        id: sign_apk
+        with:
+          releaseDirectory: android/app/build/outputs/apk/release
+          signingKeyBase64: ${{ secrets.SIGNING_KEY }}
+          alias: ${{ secrets.ALIAS }}
+          keyStorePassword: ${{ secrets.KEYSTORE_PASSWORD }}
+          keyPassword: ${{ secrets.KEY_PASSWORD }}
+
+      - name: Sign Release AAB
+        if: ${{ secrets.SIGNING_KEY != '' }}
+        uses: r0adkll/sign-android-release@v1
+        id: sign_aab
+        with:
+          releaseDirectory: android/app/build/outputs/bundle/release
+          signingKeyBase64: ${{ secrets.SIGNING_KEY }}
+          alias: ${{ secrets.ALIAS }}
+          keyStorePassword: ${{ secrets.KEYSTORE_PASSWORD }}
+          keyPassword: ${{ secrets.KEY_PASSWORD }}
+
       - name: Upload Release APK
         uses: actions/upload-artifact@v4
         with:
