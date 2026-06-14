@@ -75,24 +75,38 @@ jobs:
       - name: Auto-Generate Keystore and Sign (If No Secrets Configured)
         if: ${{ env.SIGNING_KEY == '' }}
         run: |
-          if [ -f "android/app/neonchess.keystore" ]; then
-            echo "Found existing keystore in repository. Reusing it."
+          if [ -f "android/app/release.keystore" ]; then
+            echo "Found original release.keystore in repository. Using it."
+            KEYSTORE_FILE="android/app/release.keystore"
+            KEYSTORE_PASS="codesand123"
+            KEY_PASS="codesand123"
+            KEY_ALIAS="upload"
+          elif [ -f "android/app/neonchess.keystore" ]; then
+            echo "Found existing neonchess.keystore in repository. Reusing it."
+            KEYSTORE_FILE="android/app/neonchess.keystore"
+            KEYSTORE_PASS="neonchess123"
+            KEY_PASS="neonchess123"
+            KEY_ALIAS="neonchess-key"
           else
             echo "No keystore found. Generating new keystore."
             keytool -genkey -v -keystore android/app/neonchess.keystore -alias neonchess-key -keyalg RSA -keysize 2048 -validity 10000 -storepass neonchess123 -keypass neonchess123 -dname "CN=Neon Chess, O=Neon Chess, C=US"
+            KEYSTORE_FILE="android/app/neonchess.keystore"
+            KEYSTORE_PASS="neonchess123"
+            KEY_PASS="neonchess123"
+            KEY_ALIAS="neonchess-key"
           fi
           
           # Sign APK
           APK_FILE=$(find android/app/build/outputs/apk/release/ -name "*.apk" | head -n 1)
           if [ ! -z "$APK_FILE" ]; then
-            jarsigner -verbose -sigalg SHA256withRSA -digestalg SHA256 -keystore android/app/neonchess.keystore -storepass neonchess123 -keypass neonchess123 "$APK_FILE" neonchess-key
+            jarsigner -verbose -sigalg SHA256withRSA -digestalg SHA256 -keystore "$KEYSTORE_FILE" -storepass "$KEYSTORE_PASS" -keypass "$KEY_PASS" "$APK_FILE" "$KEY_ALIAS"
             echo "Signed APK successfully: $APK_FILE"
           fi
           
           # Sign AAB
           AAB_FILE=$(find android/app/build/outputs/bundle/release/ -name "*.aab" | head -n 1)
           if [ ! -z "$AAB_FILE" ]; then
-            jarsigner -verbose -sigalg SHA256withRSA -digestalg SHA256 -keystore android/app/neonchess.keystore -storepass neonchess123 -keypass neonchess123 "$AAB_FILE" neonchess-key
+            jarsigner -verbose -sigalg SHA256withRSA -digestalg SHA256 -keystore "$KEYSTORE_FILE" -storepass "$KEYSTORE_PASS" -keypass "$KEY_PASS" "$AAB_FILE" "$KEY_ALIAS"
             echo "Signed AAB successfully: $AAB_FILE"
           fi
 
@@ -101,7 +115,10 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: app-signing-keystore-backup
-          path: android/app/neonchess.keystore
+          path: |
+            android/app/release.keystore
+            android/app/neonchess.keystore
+          if-no-files-found: ignore
 
       - name: Upload Release APK
         uses: actions/upload-artifact@v4
