@@ -120,6 +120,23 @@ jobs:
             android/app/neonchess.keystore
           if-no-files-found: ignore
 
+      - name: Export Upload Certificate PEM
+        if: ${{ env.SIGNING_KEY == '' }}
+        run: |
+          if [ -f "android/app/release.keystore" ]; then
+            keytool -export -rfc -alias upload -file android/app/upload_certificate.pem -keystore android/app/release.keystore -storepass codesand123
+          elif [ -f "android/app/neonchess.keystore" ]; then
+            keytool -export -rfc -alias neonchess-key -file android/app/upload_certificate.pem -keystore android/app/neonchess.keystore -storepass neonchess123
+          fi
+
+      - name: Upload PEM Certificate Artifact
+        if: ${{ env.SIGNING_KEY == '' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: upload-certificate-pem
+          path: android/app/upload_certificate.pem
+          if-no-files-found: ignore
+
       - name: Upload Release APK
         uses: actions/upload-artifact@v4
         with:
