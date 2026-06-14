@@ -1,10 +1,10 @@
 apply plugin: 'com.android.application'
 
 android {
-    namespace = "com.neonchess.app"
+    namespace = "com.estampalos.neonchess"
     compileSdk = rootProject.ext.compileSdkVersion
     defaultConfig {
-        applicationId "com.neonchess.app"
+        applicationId "com.estampalos.neonchess"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 2

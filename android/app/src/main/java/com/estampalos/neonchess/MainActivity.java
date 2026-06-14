@@ -1,4 +1,4 @@
-package com.neonchess.app;
+package com.estampalos.neonchess;
 
 import com.getcapacitor.BridgeActivity;
 
