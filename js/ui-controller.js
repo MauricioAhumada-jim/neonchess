@@ -408,6 +408,11 @@ function goToOnlineMode() {
   const user = getCurrentUser();
   const profile = getUserProfile();
   
+  if (typeof getIsProfileLoading === 'function' && getIsProfileLoading()) {
+    addChatMessage('Sistema', 'Cargando perfil de usuario de la base de datos. Por favor, espera...');
+    return;
+  }
+  
   if (user && profile) {
     hideGameModeModal();
     showLobbyModal();
