@@ -450,6 +450,18 @@ function showLoginModal() {
       </svg>
     `;
   }
+
+  // Ocultar botón de Google en Android/Capacitor para evitar redirecciones web incompatibles
+  const isCapacitor = window.location.hostname === 'localhost' || window.location.protocol === 'capacitor:' || window.Capacitor || typeof Capacitor !== 'undefined';
+  const googleBtn = document.querySelector('.google-btn');
+  const divider = document.querySelector('.divider');
+  if (isCapacitor) {
+    if (googleBtn) googleBtn.style.display = 'none';
+    if (divider) divider.style.display = 'none';
+  } else {
+    if (googleBtn) googleBtn.style.display = 'flex';
+    if (divider) divider.style.display = 'block';
+  }
 }
 
 function hideLoginModal() {
