@@ -1,6 +1,7 @@
 let currentUser = null;
 let userProfile = null;
 let authInitialized = false;
+let isProfileLoading = false;
 
 function initAuthListener() {
   const auth = getAuth();
@@ -91,23 +92,30 @@ function checkUserProfile() {
   
   if (!db || !currentUser) {
     console.log('No database or user, showing profile modal');
+    isProfileLoading = false;
     showProfileModal();
     return;
   }
   
+  isProfileLoading = true;
   const userRef = db.ref('users/' + currentUser.uid);
   userRef.once('value').then((snapshot) => {
+    isProfileLoading = false;
     if (snapshot.exists()) {
       userProfile = snapshot.val();
       console.log('User profile found, showing lobby');
+      if (typeof hideProfileModal === 'function') {
+        hideProfileModal();
+      }
       showLobbyModal();
     } else {
       console.log('No user profile, showing profile modal');
       showProfileModal();
     }
   }).catch((error) => {
+    isProfileLoading = false;
     console.error('Database error:', error);
-    showProfileModal();
+    addChatMessage('Sistema', 'Error de conexión con la base de datos al validar el perfil.');
   });
 }
 
@@ -215,6 +223,10 @@ function getCurrentUser() {
 
 function getUserProfile() {
   return userProfile;
+}
+
+function getIsProfileLoading() {
+  return isProfileLoading;
 }
 
 function calculateNewElo(playerElo, opponentElo, actualScore, kFactor = 32) {
