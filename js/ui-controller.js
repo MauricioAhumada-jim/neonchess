@@ -452,8 +452,18 @@ function showLoginModal() {
   }
 
   // Ocultar botón de Google en Android/Capacitor para evitar redirecciones web incompatibles
-  const isCapacitor = window.location.hostname === 'localhost' || window.location.protocol === 'capacitor:' || window.Capacitor || typeof Capacitor !== 'undefined';
+  const ua = navigator.userAgent || navigator.vendor || window.opera;
+  const isCapacitor = window.location.hostname === 'localhost' || 
+                      window.location.hostname === '127.0.0.1' || 
+                      window.location.protocol === 'capacitor:' || 
+                      window.location.protocol === 'file:' || 
+                      window.Capacitor || 
+                      typeof Capacitor !== 'undefined' || 
+                      /;\s*wv\)/.test(ua) || 
+                      (ua.includes('Android') && (ua.includes('wv') || ua.includes('Version/'))) ||
+                      ((/iPad|iPhone|iPod/.test(navigator.platform) || (ua.includes('Macintosh') && 'ontouchend' in document)) && ua.includes('Mobile/') && !ua.includes('Safari'));
   const googleBtn = document.querySelector('.google-btn');
+
   const divider = document.querySelector('.divider');
   if (isCapacitor) {
     if (googleBtn) googleBtn.style.display = 'none';
