@@ -23,6 +23,14 @@
           }
         },
         {
+          "client_id": "457210921348-gm5rmm0i1hi8l3trhlbl5abh3973ceua.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.estampalos.neonchess",
+            "certificate_hash": "3f076e8ee1e4eae68908f7fc3154c82c0a306e05"
+          }
+        },
+        {
           "client_id": "457210921348-9o9p9kg0p8qpv3qis94bek77k4c0men6.apps.googleusercontent.com",
           "client_type": 3
         }
