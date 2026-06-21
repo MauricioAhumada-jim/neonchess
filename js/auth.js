@@ -11,6 +11,30 @@ function initAuthListener() {
     return;
   }
   
+  // Inicializar GoogleAuth nativo si estamos en Capacitor/WebView
+  try {
+    const ua = navigator.userAgent || navigator.vendor || window.opera;
+    const isCapacitor = window.location.hostname === 'localhost' || 
+                        window.location.hostname === '127.0.0.1' || 
+                        window.location.protocol === 'capacitor:' || 
+                        window.location.protocol === 'file:' || 
+                        window.Capacitor || 
+                        typeof Capacitor !== 'undefined' || 
+                        /;\s*wv\)/.test(ua) || 
+                        (ua.includes('Android') && (ua.includes('wv') || ua.includes('Version/'))) ||
+                        ((/iPad|iPhone|iPod/.test(navigator.platform) || (ua.includes('Macintosh') && 'ontouchend' in document)) && ua.includes('Mobile/') && !ua.includes('Safari'));
+
+    if (isCapacitor && window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.GoogleAuth) {
+      window.Capacitor.Plugins.GoogleAuth.initialize({
+        clientId: '457210921348-9o9p9kg0p8qpv3qis94bek77k4c0men6.apps.googleusercontent.com',
+        scopes: ['profile', 'email']
+      });
+      console.log('GoogleAuth nativo inicializado en initAuthListener');
+    }
+  } catch (err) {
+    console.error('Error al inicializar GoogleAuth nativo:', err);
+  }
+  
   firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL)
     .then(() => {
       auth.onAuthStateChanged((user) => {
@@ -71,6 +95,16 @@ function loginWithGoogle() {
                       ((/iPad|iPhone|iPod/.test(navigator.platform) || (ua.includes('Macintosh') && 'ontouchend' in document)) && ua.includes('Mobile/') && !ua.includes('Safari'));
 
   if (isCapacitor && window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.GoogleAuth) {
+    // Asegurar inicialización antes de llamar a signIn
+    try {
+      window.Capacitor.Plugins.GoogleAuth.initialize({
+        clientId: '457210921348-9o9p9kg0p8qpv3qis94bek77k4c0men6.apps.googleusercontent.com',
+        scopes: ['profile', 'email']
+      });
+    } catch (e) {
+      console.warn('GoogleAuth already initialized or failed to initialize:', e);
+    }
+
     // Flujo de inicio de sesión nativo de Google usando Capacitor GoogleAuth
     window.Capacitor.Plugins.GoogleAuth.signIn()
       .then((googleUser) => {
