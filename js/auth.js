@@ -42,7 +42,7 @@ function initAuthListener() {
         if (user) {
           console.log('Auth restored for user:', user.uid);
           currentUser = user;
-          checkUserProfile();
+          checkUserProfile(false);
         } else {
           restoreDemoSession();
         }
@@ -66,7 +66,7 @@ function restoreDemoSession() {
       photoURL: null
     };
     console.log('Demo session restored:', savedDemoUid);
-    checkUserProfile();
+    checkUserProfile(false);
   }
 }
 
@@ -160,13 +160,15 @@ function loginWithGoogle() {
 
 
 
-function checkUserProfile() {
+function checkUserProfile(showUi = true) {
   const db = getDatabase();
   
   if (!db || !currentUser) {
     console.log('No database or user, showing profile modal');
     isProfileLoading = false;
-    showProfileModal();
+    if (showUi) {
+      showProfileModal();
+    }
     return;
   }
   
@@ -180,10 +182,14 @@ function checkUserProfile() {
       if (typeof hideProfileModal === 'function') {
         hideProfileModal();
       }
-      showLobbyModal();
+      if (showUi) {
+        showLobbyModal();
+      }
     } else {
       console.log('No user profile, showing profile modal');
-      showProfileModal();
+      if (showUi) {
+        showProfileModal();
+      }
     }
   }).catch((error) => {
     isProfileLoading = false;

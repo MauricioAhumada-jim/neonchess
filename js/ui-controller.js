@@ -395,6 +395,9 @@ function showGameModeModal() {
   if (!gm) return;
   gm.classList.remove('hidden');
   gm.style.display = 'flex';
+  if (typeof admobService !== 'undefined') {
+    admobService.showBanner('main-menu');
+  }
 }
 
 function hideGameModeModal() {
@@ -427,6 +430,9 @@ function goToOnlineMode() {
 function showLoginModal() {
   const m = document.getElementById('login-modal');
   if (m) m.classList.add('active');
+  if (typeof admobService !== 'undefined') {
+    admobService.showBanner('login');
+  }
   
   // Establecer pestaña de inicio de sesión por defecto y limpiar campos
   if (typeof switchAuthTab === 'function') {
@@ -473,6 +479,9 @@ function showProfileModal() {
   const m = document.getElementById('profile-modal');
   if (m) {
     m.classList.add('active');
+    if (typeof admobService !== 'undefined') {
+      admobService.showBanner('profile');
+    }
     renderCountryGrid();
     if (typeof prefillProfileModal === 'function') {
       prefillProfileModal();
@@ -500,6 +509,9 @@ function showLobbyModal() {
   }
   
   if (m) m.classList.add('active');
+  if (typeof admobService !== 'undefined') {
+    admobService.showBanner('lobby');
+  }
   updateOnlineCount();
 }
 
@@ -637,21 +649,33 @@ function updateOnlineCount() {
 function showDonateModal() {
   const modal = document.getElementById('donate-modal');
   if (modal) modal.classList.add('active');
+  if (typeof admobService !== 'undefined') {
+    admobService.showBanner('donate');
+  }
 }
 
 function hideDonateModal() {
   const modal = document.getElementById('donate-modal');
   if (modal) modal.classList.remove('active');
+  if (typeof admobService !== 'undefined') {
+    admobService.showBanner('main-menu');
+  }
 }
 
 function showTermsModal() {
   const modal = document.getElementById('terms-modal');
   if (modal) modal.classList.add('active');
+  if (typeof admobService !== 'undefined') {
+    admobService.showBanner('terms');
+  }
 }
 
 function hideTermsModal() {
   const modal = document.getElementById('terms-modal');
   if (modal) modal.classList.remove('active');
+  if (typeof admobService !== 'undefined') {
+    admobService.showBanner('main-menu');
+  }
 }
 
 function setupAIHeaders() {

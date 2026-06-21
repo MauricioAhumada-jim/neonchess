@@ -211,6 +211,10 @@ function cancelMatchmaking() {
 function startOnlineGame() {
   hideAllModals();
   
+  if (typeof admobService !== 'undefined') {
+    admobService.hideBanner();
+  }
+  
   doResetGame(false);
   clearGameMoves();
   
@@ -303,7 +307,13 @@ function endOnlineGame(navigateToLobby = false) {
   if (navigateToLobby) {
     cleanupChat();
     doResetGame(false);
-    showLobbyModal();
+    if (typeof admobService !== 'undefined') {
+      admobService.showInterstitial(() => {
+        showLobbyModal();
+      });
+    } else {
+      showLobbyModal();
+    }
   }
 }
 
@@ -444,6 +454,9 @@ function showJoinGameModal() {
   const modal = document.getElementById('join-game-modal');
   if (modal) {
     modal.classList.add('active');
+    if (typeof admobService !== 'undefined') {
+      admobService.showBanner('join-code');
+    }
     const input = document.getElementById('join-code-input');
     if (input) {
       input.value = '';
@@ -617,6 +630,9 @@ function showGameCodeModal(code) {
   if (modal && codeText) {
     codeText.textContent = code;
     modal.classList.add('active');
+    if (typeof admobService !== 'undefined') {
+      admobService.showBanner('game-code');
+    }
   }
 }
 
