@@ -3416,9 +3416,4 @@ body::before {
   background: rgba(0, 255, 255, 0.6);
 }
 
-/* Ocultar elementos de autenticación incompatibles con Capacitor (como Google Login) */
-.capacitor-app .google-btn,
-.capacitor-app .divider {
-  display: none !important;
-}
 

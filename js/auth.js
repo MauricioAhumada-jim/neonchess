@@ -59,6 +59,47 @@ function loginWithGoogle() {
     return;
   }
   
+  const ua = navigator.userAgent || navigator.vendor || window.opera;
+  const isCapacitor = window.location.hostname === 'localhost' || 
+                      window.location.hostname === '127.0.0.1' || 
+                      window.location.protocol === 'capacitor:' || 
+                      window.location.protocol === 'file:' || 
+                      window.Capacitor || 
+                      typeof Capacitor !== 'undefined' || 
+                      /;\s*wv\)/.test(ua) || 
+                      (ua.includes('Android') && (ua.includes('wv') || ua.includes('Version/'))) ||
+                      ((/iPad|iPhone|iPod/.test(navigator.platform) || (ua.includes('Macintosh') && 'ontouchend' in document)) && ua.includes('Mobile/') && !ua.includes('Safari'));
+
+  if (isCapacitor && window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.GoogleAuth) {
+    // Flujo de inicio de sesión nativo de Google usando Capacitor GoogleAuth
+    window.Capacitor.Plugins.GoogleAuth.signIn()
+      .then((googleUser) => {
+        const credential = firebase.auth.GoogleAuthProvider.credential(googleUser.authentication.idToken);
+        return auth.signInWithCredential(credential);
+      })
+      .then((result) => {
+        currentUser = result.user;
+        hideLoginModal();
+        checkUserProfile();
+      })
+      .catch((error) => {
+        console.error('Native Google login error:', error);
+        
+        let message = 'Ocurrió un error al iniciar sesión nativa con Google.';
+        if (error.message) {
+          message += '\nDetalle: ' + error.message;
+        } else if (typeof error === 'string') {
+          message += '\nDetalle: ' + error;
+        } else if (error.code) {
+          message += '\nCódigo: ' + error.code;
+        }
+        
+        alert(message);
+      });
+    return;
+  }
+  
+  // Flujo web estándar
   const provider = new firebase.auth.GoogleAuthProvider();
   provider.setCustomParameters({ prompt: 'select_account' });
   auth.signInWithPopup(provider)

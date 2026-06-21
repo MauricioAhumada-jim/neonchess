@@ -1,5 +1,12 @@
 {
   "appId": "com.estampalos.neonchess",
   "appName": "Neon Chess",
-  "webDir": "www"
+  "webDir": "www",
+  "plugins": {
+    "GoogleAuth": {
+      "scopes": ["profile", "email"],
+      "serverClientId": "457210921348-9o9p9kg0p8qpv3qis94bek77k4c0men6.apps.googleusercontent.com",
+      "forceCodeForRefreshToken": true
+    }
+  }
 }
