@@ -120,12 +120,10 @@ function loginWithGoogle() {
         console.error('Native Google login error:', error);
         
         let message = 'Ocurrió un error al iniciar sesión nativa con Google.';
-        if (error.message) {
-          message += '\nDetalle: ' + error.message;
-        } else if (typeof error === 'string') {
-          message += '\nDetalle: ' + error;
-        } else if (error.code) {
-          message += '\nCódigo: ' + error.code;
+        try {
+          message += '\nInfo: ' + JSON.stringify(error);
+        } catch (e) {
+          message += '\nError: ' + error;
         }
         
         alert(message);
