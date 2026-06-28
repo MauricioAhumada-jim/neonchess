@@ -1,6 +1,23 @@
 <!DOCTYPE html>
 <html lang="es">
   <head>
+    <script>
+      (function() {
+        const ua = navigator.userAgent || navigator.vendor || window.opera;
+        const isCapacitor = window.location.hostname === 'localhost' || 
+                            window.location.hostname === '127.0.0.1' || 
+                            window.location.protocol === 'capacitor:' || 
+                            window.location.protocol === 'file:' || 
+                            window.Capacitor || 
+                            typeof Capacitor !== 'undefined' || 
+                            /;\s*wv\)/.test(ua) || 
+                            (ua.includes('Android') && (ua.includes('wv') || ua.includes('Version/'))) ||
+                            ((/iPad|iPhone|iPod/.test(navigator.platform) || (ua.includes('Macintosh') && 'ontouchend' in document)) && ua.includes('Mobile/') && !ua.includes('Safari'));
+        if (isCapacitor) {
+          window.location.replace('play.html');
+        }
+      })();
+    </script>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 

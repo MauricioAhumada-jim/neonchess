@@ -11,6 +11,30 @@ function initAuthListener() {
     return;
   }
   
+  // Inicializar GoogleAuth nativo si estamos en Capacitor/WebView
+  try {
+    const ua = navigator.userAgent || navigator.vendor || window.opera;
+    const isCapacitor = window.location.hostname === 'localhost' || 
+                        window.location.hostname === '127.0.0.1' || 
+                        window.location.protocol === 'capacitor:' || 
+                        window.location.protocol === 'file:' || 
+                        window.Capacitor || 
+                        typeof Capacitor !== 'undefined' || 
+                        /;\s*wv\)/.test(ua) || 
+                        (ua.includes('Android') && (ua.includes('wv') || ua.includes('Version/'))) ||
+                        ((/iPad|iPhone|iPod/.test(navigator.platform) || (ua.includes('Macintosh') && 'ontouchend' in document)) && ua.includes('Mobile/') && !ua.includes('Safari'));
+
+    if (isCapacitor && window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.GoogleAuth) {
+      window.Capacitor.Plugins.GoogleAuth.initialize({
+        clientId: '457210921348-9o9p9kg0p8qpv3qis94bek77k4c0men6.apps.googleusercontent.com',
+        scopes: ['profile', 'email']
+      });
+      console.log('GoogleAuth nativo inicializado en initAuthListener');
+    }
+  } catch (err) {
+    console.error('Error al inicializar GoogleAuth nativo:', err);
+  }
+  
   firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL)
     .then(() => {
       auth.onAuthStateChanged((user) => {
@@ -18,7 +42,7 @@ function initAuthListener() {
         if (user) {
           console.log('Auth restored for user:', user.uid);
           currentUser = user;
-          checkUserProfile();
+          checkUserProfile(false);
         } else {
           restoreDemoSession();
         }
@@ -42,7 +66,7 @@ function restoreDemoSession() {
       photoURL: null
     };
     console.log('Demo session restored:', savedDemoUid);
-    checkUserProfile();
+    checkUserProfile(false);
   }
 }
 
@@ -59,6 +83,55 @@ function loginWithGoogle() {
     return;
   }
   
+  const ua = navigator.userAgent || navigator.vendor || window.opera;
+  const isCapacitor = window.location.hostname === 'localhost' || 
+                      window.location.hostname === '127.0.0.1' || 
+                      window.location.protocol === 'capacitor:' || 
+                      window.location.protocol === 'file:' || 
+                      window.Capacitor || 
+                      typeof Capacitor !== 'undefined' || 
+                      /;\s*wv\)/.test(ua) || 
+                      (ua.includes('Android') && (ua.includes('wv') || ua.includes('Version/'))) ||
+                      ((/iPad|iPhone|iPod/.test(navigator.platform) || (ua.includes('Macintosh') && 'ontouchend' in document)) && ua.includes('Mobile/') && !ua.includes('Safari'));
+
+  if (isCapacitor && window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.GoogleAuth) {
+    // Asegurar inicialización antes de llamar a signIn
+    try {
+      window.Capacitor.Plugins.GoogleAuth.initialize({
+        clientId: '457210921348-9o9p9kg0p8qpv3qis94bek77k4c0men6.apps.googleusercontent.com',
+        scopes: ['profile', 'email']
+      });
+    } catch (e) {
+      console.warn('GoogleAuth already initialized or failed to initialize:', e);
+    }
+
+    // Flujo de inicio de sesión nativo de Google usando Capacitor GoogleAuth
+    window.Capacitor.Plugins.GoogleAuth.signIn()
+      .then((googleUser) => {
+        const credential = firebase.auth.GoogleAuthProvider.credential(googleUser.authentication.idToken);
+        return auth.signInWithCredential(credential);
+      })
+      .then((result) => {
+        currentUser = result.user;
+        hideLoginModal();
+        checkUserProfile();
+      })
+      .catch((error) => {
+        console.error('Native Google login error:', error);
+        
+        let message = 'Ocurrió un error al iniciar sesión nativa con Google.';
+        try {
+          message += '\nInfo: ' + JSON.stringify(error);
+        } catch (e) {
+          message += '\nError: ' + error;
+        }
+        
+        alert(message);
+      });
+    return;
+  }
+  
+  // Flujo web estándar
   const provider = new firebase.auth.GoogleAuthProvider();
   provider.setCustomParameters({ prompt: 'select_account' });
   auth.signInWithPopup(provider)
@@ -87,13 +160,15 @@ function loginWithGoogle() {
 
 
 
-function checkUserProfile() {
+function checkUserProfile(showUi = true) {
   const db = getDatabase();
   
   if (!db || !currentUser) {
     console.log('No database or user, showing profile modal');
     isProfileLoading = false;
-    showProfileModal();
+    if (showUi) {
+      showProfileModal();
+    }
     return;
   }
   
@@ -107,10 +182,14 @@ function checkUserProfile() {
       if (typeof hideProfileModal === 'function') {
         hideProfileModal();
       }
-      showLobbyModal();
+      if (showUi) {
+        showLobbyModal();
+      }
     } else {
       console.log('No user profile, showing profile modal');
-      showProfileModal();
+      if (showUi) {
+        showProfileModal();
+      }
     }
   }).catch((error) => {
     isProfileLoading = false;

@@ -211,6 +211,15 @@ function cancelMatchmaking() {
 function startOnlineGame() {
   hideAllModals();
   
+  if (typeof admobService !== 'undefined') {
+    admobService.hideBanner();
+  }
+  
+  const repBtn1 = document.getElementById('report-opponent-btn');
+  const repBtn2 = document.getElementById('chat-report-btn');
+  if (repBtn1) repBtn1.style.display = 'inline-block';
+  if (repBtn2) repBtn2.style.display = 'inline-block';
+  
   doResetGame(false);
   clearGameMoves();
   
@@ -296,6 +305,11 @@ function endOnlineGame(navigateToLobby = false) {
   document.getElementById('game-header').style.display = 'none';
   document.getElementById('game-footer').style.display = 'none';
   
+  const repBtn1 = document.getElementById('report-opponent-btn');
+  const repBtn2 = document.getElementById('chat-report-btn');
+  if (repBtn1) repBtn1.style.display = 'none';
+  if (repBtn2) repBtn2.style.display = 'none';
+  
   updateControlButtons(false);
   
   hideDisconnectModal();
@@ -303,7 +317,13 @@ function endOnlineGame(navigateToLobby = false) {
   if (navigateToLobby) {
     cleanupChat();
     doResetGame(false);
-    showLobbyModal();
+    if (typeof admobService !== 'undefined') {
+      admobService.showInterstitial(() => {
+        showLobbyModal();
+      });
+    } else {
+      showLobbyModal();
+    }
   }
 }
 
@@ -444,6 +464,9 @@ function showJoinGameModal() {
   const modal = document.getElementById('join-game-modal');
   if (modal) {
     modal.classList.add('active');
+    if (typeof admobService !== 'undefined') {
+      admobService.showBanner('join-code');
+    }
     const input = document.getElementById('join-code-input');
     if (input) {
       input.value = '';
@@ -617,6 +640,9 @@ function showGameCodeModal(code) {
   if (modal && codeText) {
     codeText.textContent = code;
     modal.classList.add('active');
+    if (typeof admobService !== 'undefined') {
+      admobService.showBanner('game-code');
+    }
   }
 }
 

@@ -1,0 +1,56 @@
+{
+  "project_info": {
+    "project_number": "457210921348",
+    "firebase_url": "https://neonchess-8da7f-default-rtdb.firebaseio.com",
+    "project_id": "neonchess-8da7f",
+    "storage_bucket": "neonchess-8da7f.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:457210921348:android:0818ded7df69e91db79dd1",
+        "android_client_info": {
+          "package_name": "com.estampalos.neonchess"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "457210921348-8kdfm9ge4s3sm4uo7sl4p829jbqq4d31.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.estampalos.neonchess",
+            "certificate_hash": "9901f942cd25c0d5ad4f2d946c7779dc6c0dfbe3"
+          }
+        },
+        {
+          "client_id": "457210921348-gm5rmm0i1hi8l3trhlbl5abh3973ceua.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.estampalos.neonchess",
+            "certificate_hash": "3f076e8ee1e4eae68908f7fc3154c82c0a306e05"
+          }
+        },
+        {
+          "client_id": "457210921348-9o9p9kg0p8qpv3qis94bek77k4c0men6.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAc6ACkQ1I133DVrpnXZW4Dv8F9OU8wK4o"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "457210921348-9o9p9kg0p8qpv3qis94bek77k4c0men6.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

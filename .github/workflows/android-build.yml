@@ -1,0 +1,153 @@
+name: Build Android App
+
+on:
+  push:
+    branches:
+      - android-app
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm install --legacy-peer-deps
+
+      - name: Build Web Assets
+        run: npm run build
+
+      - name: Sync Capacitor
+        run: npx cap sync
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '21'
+
+      - name: Make Gradle Wrapper Executable
+        run: chmod +x android/gradlew
+
+      - name: Build Release APK
+        run: |
+          cd android
+          ./gradlew assembleRelease
+
+      - name: Build Release AAB
+        run: |
+          cd android
+          ./gradlew bundleRelease
+
+      - name: Sign Release APK
+        if: ${{ env.SIGNING_KEY != '' }}
+        uses: r0adkll/sign-android-release@v1
+        id: sign_apk
+        with:
+          releaseDirectory: android/app/build/outputs/apk/release
+          signingKeyBase64: ${{ secrets.SIGNING_KEY }}
+          alias: ${{ secrets.ALIAS }}
+          keyStorePassword: ${{ secrets.KEYSTORE_PASSWORD }}
+          keyPassword: ${{ secrets.KEY_PASSWORD }}
+
+      - name: Sign Release AAB
+        if: ${{ env.SIGNING_KEY != '' }}
+        uses: r0adkll/sign-android-release@v1
+        id: sign_aab
+        with:
+          releaseDirectory: android/app/build/outputs/bundle/release
+          signingKeyBase64: ${{ secrets.SIGNING_KEY }}
+          alias: ${{ secrets.ALIAS }}
+          keyStorePassword: ${{ secrets.KEYSTORE_PASSWORD }}
+          keyPassword: ${{ secrets.KEY_PASSWORD }}
+
+      - name: Auto-Generate Keystore and Sign (If No Secrets Configured)
+        if: ${{ env.SIGNING_KEY == '' }}
+        run: |
+          if [ -f "android/app/release.keystore" ]; then
+            echo "Found original release.keystore in repository. Using it."
+            KEYSTORE_FILE="android/app/release.keystore"
+            KEYSTORE_PASS="codesand123"
+            KEY_PASS="codesand123"
+            KEY_ALIAS="upload"
+          elif [ -f "android/app/neonchess.keystore" ]; then
+            echo "Found existing neonchess.keystore in repository. Reusing it."
+            KEYSTORE_FILE="android/app/neonchess.keystore"
+            KEYSTORE_PASS="neonchess123"
+            KEY_PASS="neonchess123"
+            KEY_ALIAS="neonchess-key"
+          else
+            echo "No keystore found. Generating new keystore."
+            keytool -genkey -v -keystore android/app/neonchess.keystore -alias neonchess-key -keyalg RSA -keysize 2048 -validity 10000 -storepass neonchess123 -keypass neonchess123 -dname "CN=Neon Chess, O=Neon Chess, C=US"
+            KEYSTORE_FILE="android/app/neonchess.keystore"
+            KEYSTORE_PASS="neonchess123"
+            KEY_PASS="neonchess123"
+            KEY_ALIAS="neonchess-key"
+          fi
+          
+          # Sign APK
+          APK_FILE=$(find android/app/build/outputs/apk/release/ -name "*.apk" | head -n 1)
+          if [ ! -z "$APK_FILE" ]; then
+            jarsigner -verbose -sigalg SHA256withRSA -digestalg SHA256 -keystore "$KEYSTORE_FILE" -storepass "$KEYSTORE_PASS" -keypass "$KEY_PASS" "$APK_FILE" "$KEY_ALIAS"
+            echo "Signed APK successfully: $APK_FILE"
+          fi
+          
+          # Sign AAB
+          AAB_FILE=$(find android/app/build/outputs/bundle/release/ -name "*.aab" | head -n 1)
+          if [ ! -z "$AAB_FILE" ]; then
+            jarsigner -verbose -sigalg SHA256withRSA -digestalg SHA256 -keystore "$KEYSTORE_FILE" -storepass "$KEYSTORE_PASS" -keypass "$KEY_PASS" "$AAB_FILE" "$KEY_ALIAS"
+            echo "Signed AAB successfully: $AAB_FILE"
+          fi
+
+      - name: Upload Signing Keystore Backup
+        if: ${{ env.SIGNING_KEY == '' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-signing-keystore-backup
+          path: |
+            android/app/release.keystore
+            android/app/neonchess.keystore
+          if-no-files-found: ignore
+
+      - name: Export Upload Certificate PEM
+        if: ${{ env.SIGNING_KEY == '' }}
+        run: |
+          if [ -f "android/app/release.keystore" ]; then
+            keytool -export -rfc -alias upload -file android/app/upload_certificate.pem -keystore android/app/release.keystore -storepass codesand123
+          elif [ -f "android/app/neonchess.keystore" ]; then
+            keytool -export -rfc -alias neonchess-key -file android/app/upload_certificate.pem -keystore android/app/neonchess.keystore -storepass neonchess123
+          fi
+
+      - name: Upload PEM Certificate Artifact
+        if: ${{ env.SIGNING_KEY == '' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: upload-certificate-pem
+          path: android/app/upload_certificate.pem
+          if-no-files-found: ignore
+
+      - name: Upload Release APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-release-apk
+          path: android/app/build/outputs/apk/release/*.apk
+          if-no-files-found: error
+
+      - name: Upload Release AAB
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-release-aab
+          path: android/app/build/outputs/bundle/release/*.aab
+          if-no-files-found: error
+

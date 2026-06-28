@@ -14,3 +14,10 @@ Desktop.ini
 
 # Log files
 *.log
+
+# Dependencies
+node_modules/
+
+# Built web folder
+www/
+

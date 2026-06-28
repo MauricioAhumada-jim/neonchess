@@ -64,6 +64,10 @@ function createBoard() {
   }
 
   updateBoard();
+  
+  if (typeof animateLastMove === 'function') {
+    animateLastMove();
+  }
 }
 
 function updateBoard() {
@@ -395,6 +399,9 @@ function showGameModeModal() {
   if (!gm) return;
   gm.classList.remove('hidden');
   gm.style.display = 'flex';
+  if (typeof admobService !== 'undefined') {
+    admobService.showBanner('main-menu');
+  }
 }
 
 function hideGameModeModal() {
@@ -427,6 +434,9 @@ function goToOnlineMode() {
 function showLoginModal() {
   const m = document.getElementById('login-modal');
   if (m) m.classList.add('active');
+  if (typeof admobService !== 'undefined') {
+    admobService.showBanner('login');
+  }
   
   // Establecer pestaña de inicio de sesión por defecto y limpiar campos
   if (typeof switchAuthTab === 'function') {
@@ -451,17 +461,11 @@ function showLoginModal() {
     `;
   }
 
-  // Ocultar botón de Google en Android/Capacitor para evitar redirecciones web incompatibles
-  const isCapacitor = window.location.hostname === 'localhost' || window.location.protocol === 'capacitor:' || window.Capacitor || typeof Capacitor !== 'undefined';
+  // El botón de Google ahora es compatible nativamente en Capacitor usando el plugin nativo
   const googleBtn = document.querySelector('.google-btn');
   const divider = document.querySelector('.divider');
-  if (isCapacitor) {
-    if (googleBtn) googleBtn.style.display = 'none';
-    if (divider) divider.style.display = 'none';
-  } else {
-    if (googleBtn) googleBtn.style.display = 'flex';
-    if (divider) divider.style.display = 'block';
-  }
+  if (googleBtn) googleBtn.style.display = 'flex';
+  if (divider) divider.style.display = 'block';
 }
 
 function hideLoginModal() {
@@ -479,6 +483,9 @@ function showProfileModal() {
   const m = document.getElementById('profile-modal');
   if (m) {
     m.classList.add('active');
+    if (typeof admobService !== 'undefined') {
+      admobService.showBanner('profile');
+    }
     renderCountryGrid();
     if (typeof prefillProfileModal === 'function') {
       prefillProfileModal();
@@ -506,6 +513,9 @@ function showLobbyModal() {
   }
   
   if (m) m.classList.add('active');
+  if (typeof admobService !== 'undefined') {
+    admobService.showBanner('lobby');
+  }
   updateOnlineCount();
 }
 
@@ -643,21 +653,33 @@ function updateOnlineCount() {
 function showDonateModal() {
   const modal = document.getElementById('donate-modal');
   if (modal) modal.classList.add('active');
+  if (typeof admobService !== 'undefined') {
+    admobService.showBanner('donate');
+  }
 }
 
 function hideDonateModal() {
   const modal = document.getElementById('donate-modal');
   if (modal) modal.classList.remove('active');
+  if (typeof admobService !== 'undefined') {
+    admobService.showBanner('main-menu');
+  }
 }
 
 function showTermsModal() {
   const modal = document.getElementById('terms-modal');
   if (modal) modal.classList.add('active');
+  if (typeof admobService !== 'undefined') {
+    admobService.showBanner('terms');
+  }
 }
 
 function hideTermsModal() {
   const modal = document.getElementById('terms-modal');
   if (modal) modal.classList.remove('active');
+  if (typeof admobService !== 'undefined') {
+    admobService.showBanner('main-menu');
+  }
 }
 
 function setupAIHeaders() {
@@ -701,4 +723,114 @@ function setupAIHeaders() {
   if (myFlag) myFlag.textContent = profile ? (profile.countryFlag || '👤') : '👤';
   if (myName) myName.textContent = profile ? `${profile.username} (${eloVal})` : `Invitado (${eloVal})`;
   if (myStats) myStats.textContent = profile ? `${profile.wins || 0}V / ${profile.losses || 0}D / ${profile.draws || 0}E` : 'Local';
+}
+
+function showReportModal() {
+  const modal = document.getElementById('report-modal');
+  const nameSpan = document.getElementById('reported-player-name');
+  
+  let oppNameText = 'Oponente';
+  const oppNameEl = document.getElementById('opponent-name');
+  if (oppNameEl) {
+    oppNameText = oppNameEl.textContent;
+    if (oppNameText.includes(' (')) {
+      oppNameText = oppNameText.split(' (')[0];
+    }
+  }
+  
+  if (nameSpan) nameSpan.textContent = oppNameText;
+  
+  const blockBtnText = document.getElementById('block-btn-text');
+  if (blockBtnText) {
+    const isBlocked = typeof isUserBlocked === 'function' && isUserBlocked(oppNameText, typeof opponentUid !== 'undefined' ? opponentUid : null);
+    blockBtnText.textContent = isBlocked ? 'Desbloquear Chat' : 'Bloquear Chat (Mudo)';
+  }
+  
+  if (modal) modal.classList.add('active');
+}
+
+function hideReportModal() {
+  const modal = document.getElementById('report-modal');
+  if (modal) modal.classList.remove('active');
+}
+
+function animateLastMove() {
+  if (typeof gameState === 'undefined' || !gameState.lastMove) return;
+  
+  const lastMove = gameState.lastMove;
+  const fromRow = lastMove.fromRow;
+  const fromCol = lastMove.fromCol;
+  const toRow = lastMove.toRow;
+  const toCol = lastMove.toCol;
+  
+  // 1. Añadir el glow de la casilla destino
+  const toSquare = document.querySelector(`.square[data-row="${toRow}"][data-col="${toCol}"]`);
+  if (toSquare) {
+    toSquare.classList.add('landing-glow');
+  }
+  
+  // 2. Animar la pieza principal del movimiento
+  if (toSquare) {
+    const piece = toSquare.querySelector('.piece');
+    const fromSquare = document.querySelector(`.square[data-row="${fromRow}"][data-col="${fromCol}"]`);
+    if (piece && fromSquare) {
+      animatePieceTransition(piece, fromSquare, toSquare);
+    }
+  }
+  
+  // 3. Detectar y animar enroque (movimiento secundario de la torre)
+  if (typeof currentBoard !== 'undefined') {
+    const targetPiece = currentBoard[toRow][toCol];
+    const isKing = targetPiece === '♔' || targetPiece === '♚';
+    if (isKing && Math.abs(toCol - fromCol) === 2) {
+      let rookFromCol, rookToCol;
+      if (toCol === 6) { // Enroque corto
+        rookFromCol = 7;
+        rookToCol = 5;
+      } else if (toCol === 2) { // Enroque largo
+        rookFromCol = 0;
+        rookToCol = 3;
+      }
+      
+      if (rookFromCol !== undefined) {
+        const rookToSquare = document.querySelector(`.square[data-row="${toRow}"][data-col="${rookToCol}"]`);
+        const rookFromSquare = document.querySelector(`.square[data-row="${toRow}"][data-col="${rookFromCol}"]`);
+        if (rookToSquare && rookFromSquare) {
+          const rookPiece = rookToSquare.querySelector('.piece');
+          if (rookPiece) {
+            animatePieceTransition(rookPiece, rookFromSquare, rookToSquare);
+          }
+        }
+      }
+    }
+  }
+}
+
+function animatePieceTransition(pieceElement, fromSquare, toSquare) {
+  const fromRect = fromSquare.getBoundingClientRect();
+  const toRect = toSquare.getBoundingClientRect();
+  
+  const deltaX = fromRect.left - toRect.left;
+  const deltaY = fromRect.top - toRect.top;
+  
+  // Posicionar la pieza en el origen de forma síncrona sin transiciones
+  pieceElement.style.transition = 'none';
+  pieceElement.style.transform = `translate(${deltaX}px, ${deltaY}px)`;
+  pieceElement.style.zIndex = '999'; // Traer al frente durante el desplazamiento
+  
+  // Forzar reflujo/layout para registrar la posición original
+  pieceElement.offsetHeight; 
+  
+  // Ejecutar el traslado en el siguiente frame
+  requestAnimationFrame(() => {
+    pieceElement.style.transition = 'transform 280ms cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+    pieceElement.style.transform = 'translate(0, 0)';
+    
+    // Limpiar estilos inline una vez finalizado el desplazamiento
+    setTimeout(() => {
+      pieceElement.style.zIndex = '';
+      pieceElement.style.transition = '';
+      pieceElement.style.transform = '';
+    }, 280);
+  });
 }
