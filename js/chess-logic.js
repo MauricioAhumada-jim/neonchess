@@ -449,6 +449,9 @@ function completeMoveLogic(fromRow, fromCol, toRow, toCol, piece, capturedPiece,
   }
 
   createBoard();
+  if (typeof playMoveSound === 'function') {
+    playMoveSound(!!capturedPiece);
+  }
 
   const opponentColor = isWhite ? 'black' : 'white';
   if (isInCheck(opponentColor)) {
@@ -479,6 +482,9 @@ function undoMove() {
     currentPlayer = currentPlayer === 'white' ? 'black' : 'white';
     selectedSquare = null;
     createBoard();
+    if (typeof playMoveSound === 'function') {
+      playMoveSound(false);
+    }
     updateStatus();
     updateMoveHistory();
     updateCapturedPieces();

@@ -426,6 +426,9 @@ function applyOpponentMove(move) {
   currentPlayer = currentPlayer === 'white' ? 'black' : 'white';
   
   createBoard();
+  if (typeof playMoveSound === 'function') {
+    playMoveSound(!!move.capturedPiece);
+  }
   updateStatus();
   updateMoveHistory();
   updateCapturedPieces();
