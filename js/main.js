@@ -2,9 +2,7 @@ function selectPvP() {
   gameMode = 'pvp';
   aiDifficulty = null;
   hideGameModeModal();
-  if (typeof admobService !== 'undefined') {
-    admobService.hideBanner();
-  }
+
   const diff = document.getElementById('difficulty-section');
   if (diff) diff.classList.remove('active');
   addChatMessage('Sistema', 'Modo Jugador vs Jugador seleccionado');
@@ -21,27 +19,21 @@ function showDifficulty() {
     gm.classList.remove('hidden');
     gm.style.display = 'flex';
   }
-  if (typeof admobService !== 'undefined') {
-    admobService.showBanner('difficulty');
-  }
+
 }
 
 function hideDifficulty() {
   const diff = document.getElementById('difficulty-section');
   if (!diff) return;
   diff.classList.remove('active');
-  if (typeof admobService !== 'undefined') {
-    admobService.showBanner('main-menu');
-  }
+
 }
 
 function selectAI(difficulty) {
   gameMode = 'ai';
   aiDifficulty = difficulty;
   hideGameModeModal();
-  if (typeof admobService !== 'undefined') {
-    admobService.hideBanner();
-  }
+
   const diff = document.getElementById('difficulty-section');
   if (diff) diff.classList.remove('active');
   
@@ -60,13 +52,7 @@ function resetGame(showModeSelector = true) {
   }
   
   if (gameMode && showModeSelector) {
-    if (typeof admobService !== 'undefined') {
-      admobService.showInterstitial(() => {
-        doResetGame(showModeSelector);
-      });
-    } else {
       doResetGame(showModeSelector);
-    }
   } else {
     doResetGame(showModeSelector);
   }
@@ -176,10 +162,7 @@ async function init() {
   updateStatus();
   updateCapturedPieces();
   
-  if (typeof admobService !== 'undefined') {
-    admobService.init();
-    admobService.showBanner('main-menu');
-  }
+
   
   const firebaseReady = await initFirebase();
   
