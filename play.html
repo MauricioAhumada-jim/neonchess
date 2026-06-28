@@ -262,6 +262,7 @@
             <span class="player-flag-small" id="opponent-flag"></span>
             <span class="player-name-small" id="opponent-name" style="color: #ff00ff; text-shadow: 0 0 10px rgba(255, 0, 255, 0.5);">Oponente</span>
             <span class="player-stats-small" id="opponent-stats"></span>
+            <button id="report-opponent-btn" class="report-btn-small" onclick="showReportModal()" style="display: none; background: rgba(255, 0, 0, 0.15); border: 1px solid #ff3333; border-radius: 4px; color: #ff3333; font-family: 'Orbitron', monospace; font-size: 0.65rem; cursor: pointer; padding: 2px 6px; transition: all 0.2s ease;">⚠️ Moderar</button>
           </div>
           <div class="game-timer" id="opponent-timer" style="font-family: 'Orbitron', monospace; font-size: 1.2rem; font-weight: bold; color: #ff00ff; text-shadow: 0 0 10px rgba(255, 0, 255, 0.5); padding: 4px 12px; background: rgba(0,0,0,0.6); border: 2px solid rgba(255, 0, 255, 0.4); border-radius: 6px; min-width: 75px; text-align: center; display: none; box-shadow: 0 0 10px rgba(255,0,255,0.2);">--:--</div>
         </div>
@@ -322,7 +323,10 @@
       </div>
 
       <div class="chat-container" id="chat-container">
-        <div class="chat-header">Chat del Juego</div>
+        <div class="chat-header" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+          <span>Chat del Juego</span>
+          <button id="chat-report-btn" class="report-btn-small" onclick="showReportModal()" style="display: none; background: rgba(255, 0, 0, 0.15); border: 1px solid #ff3333; border-radius: 4px; color: #ff3333; font-family: 'Orbitron', monospace; font-size: 0.65rem; cursor: pointer; padding: 2px 6px; transition: all 0.2s ease;">⚠️ Moderar Oponente</button>
+        </div>
         <div class="chat-messages" id="chat-messages" data-testid="chat-messages">
           <div class="chat-message">
             <div class="timestamp">Sistema</div>
@@ -459,8 +463,8 @@
           <h3>2. Uso del Servicio</h3>
           <p>Neon Chess es un juego de ajedrez en linea gratuito. Te comprometes a utilizar el servicio de manera responsable y respetuosa con otros jugadores. Esta prohibido el uso de trampas, bots o cualquier software que otorgue ventajas injustas.</p>
           
-          <h3>3. Cuentas de Usuario</h3>
-          <p>Al crear una cuenta mediante Google, eres responsable de mantener la confidencialidad de tu cuenta. Nos reservamos el derecho de suspender o eliminar cuentas que violen estos terminos.</p>
+          <h3>3. Cuentas de Usuario y Contenido de Usuario (UGC)</h3>
+          <p>Al crear una cuenta en Neon Chess, eres responsable de mantener la confidencialidad de tu cuenta. Está terminantemente prohibido utilizar el chat para acosar, insultar, amenazar, enviar spam o compartir contenido indebido (UGC). Nos reservamos el derecho de bloquear el acceso y suspender permanentemente de forma inmediata las cuentas de usuarios abusivos.</p>
           
           <h3>4. Donaciones</h3>
           <p>Las donaciones realizadas a traves de PayPal o Patreon son voluntarias y no reembolsables. Las donaciones se utilizan para el mantenimiento de servidores y el desarrollo continuo del juego.</p>
@@ -478,6 +482,34 @@
           <p>Para consultas relacionadas con estos terminos, puedes contactarnos a traves de nuestra pagina oficial.</p>
         </div>
         <button class="back-btn" onclick="hideTermsModal()" data-testid="button-close-terms">Cerrar</button>
+      </div>
+    </div>
+
+    <div class="modal" id="report-modal">
+      <div class="modal-content" style="max-width: 400px; width: 90%;">
+        <h2>MODERAR JUGADOR</h2>
+        <p style="color: #ff00ff; text-align: center; margin: 10px 0; font-family: 'Orbitron', monospace; font-size: 0.95rem;">Oponente: <span id="reported-player-name" style="color: #00ffff;">Oponente</span></p>
+        
+        <div style="margin: 20px 0; display: flex; flex-direction: column; gap: 15px;">
+          <button class="mode-btn" onclick="blockOpponent()" style="width: 100%; border-color: #ff00ff; color: #ff00ff; background: rgba(255, 0, 255, 0.05);" id="block-btn-text">
+            Bloquear Chat (Mudo)
+          </button>
+          
+          <div style="border-top: 1px solid rgba(0,255,255,0.2); padding-top: 15px;">
+            <label for="report-reason-select" style="color: #00ffff; font-family: 'Orbitron', monospace; font-size: 0.85rem; margin-bottom: 8px; display: block; text-align: left;">MOTIVO DEL REPORTE</label>
+            <select id="report-reason-select" style="width: 100%; padding: 10px; background: rgba(0, 0, 0, 0.8); border: 2px solid #00ffff; border-radius: 8px; color: #00ffff; font-family: 'Orbitron', monospace; font-size: 0.9rem; cursor: pointer; outline: none; box-sizing: border-box;">
+              <option value="acoso_insultos">Acoso o Insultos en Chat</option>
+              <option value="trampas">Sospecha de Trampas (Cheating)</option>
+              <option value="inadecuado">Comportamiento Inadecuado</option>
+            </select>
+          </div>
+          
+          <button class="mode-btn online" onclick="submitReport()" style="width: 100%;">
+            Enviar Reporte Oficial
+          </button>
+        </div>
+        
+        <button class="back-btn" onclick="hideReportModal()" style="width: 100%; padding: 12px; font-family: 'Orbitron', monospace; font-weight: bold; margin-top: 10px;">Cancelar</button>
       </div>
     </div>
 

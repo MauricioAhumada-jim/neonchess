@@ -6,12 +6,15 @@ function initOnlineChat() {
   
   if (!db || !gameId) return;
   
+  loadBlockedUsers();
+  syncBlockedUsersFromFirebase();
+  
   chatRef = db.ref('games/' + gameId + '/chat');
   
   chatRef.on('child_added', (snapshot) => {
     const msg = snapshot.val();
     if (msg) {
-      displayChatMessage(msg.sender, msg.text, msg.timestamp);
+      displayChatMessage(msg.sender, msg.text, msg.timestamp, msg.senderUid);
     }
   });
 }
@@ -27,8 +30,10 @@ function sendMessage() {
   
   if (gameMode === 'online' && chatRef) {
     const profile = getUserProfile();
+    const user = getCurrentUser();
     chatRef.push({
       sender: profile ? profile.username : 'Jugador',
+      senderUid: user ? user.uid : null,
       text: text,
       timestamp: Date.now()
     });
@@ -41,7 +46,12 @@ function addChatMessage(sender, text) {
   displayChatMessage(sender, text, Date.now());
 }
 
-function displayChatMessage(sender, text, timestamp) {
+function displayChatMessage(sender, text, timestamp, senderUid = null) {
+  if (isUserBlocked(sender, senderUid)) {
+    console.log('Mensaje omitido de usuario bloqueado:', sender);
+    return;
+  }
+  
   const chatContainer = document.getElementById('chat-messages');
   if (!chatContainer) return;
   
@@ -155,6 +165,14 @@ function cleanupChat() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+  loadBlockedUsers();
+  
+  // Exponer funciones globales
+  window.blockOpponent = blockOpponent;
+  window.submitReport = submitReport;
+  window.isUserBlocked = isUserBlocked;
+  window.loadBlockedUsers = loadBlockedUsers;
+
   const chatInput = document.getElementById('chat-input');
   if (chatInput) {
     chatInput.addEventListener('keypress', (e) => {
@@ -164,3 +182,151 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 });
+
+// Lógica de moderación UGC
+let blockedUsers = [];
+
+function loadBlockedUsers() {
+  try {
+    const saved = localStorage.getItem('neonchess_blocked_users');
+    blockedUsers = saved ? JSON.parse(saved) : [];
+  } catch (e) {
+    blockedUsers = [];
+  }
+}
+
+function isUserBlocked(username, uid) {
+  if (!blockedUsers) return false;
+  return blockedUsers.includes(username) || (uid && blockedUsers.includes(uid));
+}
+
+function syncBlockedUsersFromFirebase() {
+  const db = getDatabase();
+  const user = getCurrentUser();
+  if (!db || !user) return;
+  
+  db.ref('blocks/' + user.uid).once('value').then((snapshot) => {
+    if (snapshot.exists()) {
+      const fbBlocks = snapshot.val();
+      loadBlockedUsers();
+      
+      let updated = false;
+      for (let blockedUid in fbBlocks) {
+        if (!blockedUsers.includes(blockedUid)) {
+          blockedUsers.push(blockedUid);
+          updated = true;
+        }
+      }
+      
+      if (updated) {
+        localStorage.setItem('neonchess_blocked_users', JSON.stringify(blockedUsers));
+      }
+    }
+  }).catch(err => console.warn('Error al sincronizar bloqueos de Firebase:', err));
+}
+
+function blockOpponent() {
+  let opponentName = 'Oponente';
+  const nameSpan = document.getElementById('reported-player-name');
+  if (nameSpan) {
+    opponentName = nameSpan.textContent;
+  }
+  
+  const oppUid = typeof opponentUid !== 'undefined' ? opponentUid : null;
+  
+  loadBlockedUsers();
+  
+  const isAlreadyBlocked = isUserBlocked(opponentName, oppUid);
+  
+  if (isAlreadyBlocked) {
+    // Desbloquear
+    blockedUsers = blockedUsers.filter(item => item !== opponentName && item !== oppUid);
+    localStorage.setItem('neonchess_blocked_users', JSON.stringify(blockedUsers));
+    
+    // Quitar de Firebase de forma segura
+    const db = getDatabase();
+    const user = getCurrentUser();
+    if (db && user && oppUid) {
+      db.ref('blocks/' + user.uid + '/' + oppUid).remove();
+    }
+    
+    addChatMessage('Sistema', `Has desbloqueado a ${opponentName}.`);
+  } else {
+    // Bloquear
+    if (!blockedUsers.includes(opponentName)) {
+      blockedUsers.push(opponentName);
+    }
+    if (oppUid && !blockedUsers.includes(oppUid)) {
+      blockedUsers.push(oppUid);
+    }
+    localStorage.setItem('neonchess_blocked_users', JSON.stringify(blockedUsers));
+    
+    // Guardar en Firebase de forma segura
+    const db = getDatabase();
+    const user = getCurrentUser();
+    if (db && user && oppUid) {
+      db.ref('blocks/' + user.uid + '/' + oppUid).set(true);
+    }
+    
+    addChatMessage('Sistema', `Has bloqueado a ${opponentName}. No verás sus mensajes.`);
+    
+    // Limpiar mensajes existentes en pantalla
+    removeChatMessagesFromSender(opponentName);
+  }
+  
+  if (typeof hideReportModal === 'function') {
+    hideReportModal();
+  }
+}
+
+function removeChatMessagesFromSender(sender) {
+  const chatContainer = document.getElementById('chat-messages');
+  if (!chatContainer) return;
+  
+  const messages = chatContainer.querySelectorAll('.chat-message');
+  messages.forEach(msg => {
+    const playerSpan = msg.querySelector('.player');
+    if (playerSpan && playerSpan.textContent === sender) {
+      msg.remove();
+    }
+  });
+}
+
+function submitReport() {
+  const db = getDatabase();
+  const user = getCurrentUser();
+  const reasonSelect = document.getElementById('report-reason-select');
+  const reason = reasonSelect ? reasonSelect.value : 'desconocido';
+  
+  let opponentName = 'Oponente';
+  const nameSpan = document.getElementById('reported-player-name');
+  if (nameSpan) {
+    opponentName = nameSpan.textContent;
+  }
+  
+  const oppUid = typeof opponentUid !== 'undefined' ? opponentUid : 'unknown';
+  
+  if (!db) {
+    alert('Error: No se pudo conectar al servidor de reportes.');
+    return;
+  }
+  
+  const reportRef = db.ref('reports').push();
+  reportRef.set({
+    reporterUid: user ? user.uid : 'anonimo',
+    reporterName: (user && userProfile) ? userProfile.username : 'Invitado',
+    reportedUid: oppUid,
+    reportedUsername: opponentName,
+    reason: reason,
+    gameId: typeof currentGameId !== 'undefined' ? currentGameId : 'none',
+    timestamp: firebase.database.ServerValue.TIMESTAMP
+  }).then(() => {
+    alert('Reporte enviado correctamente. Nuestro equipo de soporte revisará el caso.');
+    if (typeof hideReportModal === 'function') {
+      hideReportModal();
+    }
+  }).catch((err) => {
+    console.error('Error al enviar reporte:', err);
+    alert('Error al enviar el reporte. Por favor inténtalo de nuevo.');
+  });
+}

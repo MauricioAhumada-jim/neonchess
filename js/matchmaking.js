@@ -215,6 +215,11 @@ function startOnlineGame() {
     admobService.hideBanner();
   }
   
+  const repBtn1 = document.getElementById('report-opponent-btn');
+  const repBtn2 = document.getElementById('chat-report-btn');
+  if (repBtn1) repBtn1.style.display = 'inline-block';
+  if (repBtn2) repBtn2.style.display = 'inline-block';
+  
   doResetGame(false);
   clearGameMoves();
   
@@ -299,6 +304,11 @@ function endOnlineGame(navigateToLobby = false) {
   
   document.getElementById('game-header').style.display = 'none';
   document.getElementById('game-footer').style.display = 'none';
+  
+  const repBtn1 = document.getElementById('report-opponent-btn');
+  const repBtn2 = document.getElementById('chat-report-btn');
+  if (repBtn1) repBtn1.style.display = 'none';
+  if (repBtn2) repBtn2.style.display = 'none';
   
   updateControlButtons(false);
   

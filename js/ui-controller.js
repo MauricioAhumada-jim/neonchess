@@ -720,3 +720,32 @@ function setupAIHeaders() {
   if (myName) myName.textContent = profile ? `${profile.username} (${eloVal})` : `Invitado (${eloVal})`;
   if (myStats) myStats.textContent = profile ? `${profile.wins || 0}V / ${profile.losses || 0}D / ${profile.draws || 0}E` : 'Local';
 }
+
+function showReportModal() {
+  const modal = document.getElementById('report-modal');
+  const nameSpan = document.getElementById('reported-player-name');
+  
+  let oppNameText = 'Oponente';
+  const oppNameEl = document.getElementById('opponent-name');
+  if (oppNameEl) {
+    oppNameText = oppNameEl.textContent;
+    if (oppNameText.includes(' (')) {
+      oppNameText = oppNameText.split(' (')[0];
+    }
+  }
+  
+  if (nameSpan) nameSpan.textContent = oppNameText;
+  
+  const blockBtnText = document.getElementById('block-btn-text');
+  if (blockBtnText) {
+    const isBlocked = typeof isUserBlocked === 'function' && isUserBlocked(oppNameText, typeof opponentUid !== 'undefined' ? opponentUid : null);
+    blockBtnText.textContent = isBlocked ? 'Desbloquear Chat' : 'Bloquear Chat (Mudo)';
+  }
+  
+  if (modal) modal.classList.add('active');
+}
+
+function hideReportModal() {
+  const modal = document.getElementById('report-modal');
+  if (modal) modal.classList.remove('active');
+}
