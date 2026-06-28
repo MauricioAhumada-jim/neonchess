@@ -39,8 +39,6 @@ function createBoard() {
     for (let j = 0; j < 8; j++) {
       const row = boardFlipped ? 7 - i : i;
       const col = boardFlipped ? 7 - j : j;
-      const displayRow = i;
-      const displayCol = j;
       
       const square = document.createElement('div');
       const algebraic = files[col] + ranks[row];
@@ -51,12 +49,80 @@ function createBoard() {
       square.setAttribute('data-square', algebraic);
       square.addEventListener('click', handleSquareClick);
 
+      // Aplicar clase de resplandor (glow) si es la casilla destino del último movimiento
+      if (typeof gameState !== 'undefined' && gameState.lastMove) {
+        const lastMove = gameState.lastMove;
+        if (row === lastMove.toRow && col === lastMove.toCol) {
+          square.classList.add('landing-glow');
+        }
+      }
+
       const piece = currentBoard[row][col];
       if (piece) {
         const pieceElement = document.createElement('div');
         pieceElement.className = `piece ${whitePieces.includes(piece) ? 'white' : 'black'}`;
         pieceElement.textContent = piece;
         pieceElement.style.pointerEvents = 'none';
+
+        // Lógica de animación de traslado (slide) porcentual sin parpadeos
+        let animateThisPiece = false;
+        let deltaI = 0;
+        let deltaJ = 0;
+
+        if (typeof gameState !== 'undefined' && gameState.lastMove) {
+          const lastMove = gameState.lastMove;
+
+          // 1. Pieza principal movida
+          if (row === lastMove.toRow && col === lastMove.toCol) {
+            animateThisPiece = true;
+            const fromI = boardFlipped ? 7 - lastMove.fromRow : lastMove.fromRow;
+            const fromJ = boardFlipped ? 7 - lastMove.fromCol : lastMove.fromCol;
+            const toI = boardFlipped ? 7 - lastMove.toRow : lastMove.toRow;
+            const toJ = boardFlipped ? 7 - lastMove.toCol : lastMove.toCol;
+            deltaI = fromI - toI;
+            deltaJ = fromJ - toJ;
+          }
+
+          // 2. Torre en caso de enroque
+          const targetPiece = currentBoard[lastMove.toRow][lastMove.toCol];
+          const isKing = targetPiece === '♔' || targetPiece === '♚';
+          if (isKing && Math.abs(lastMove.toCol - lastMove.fromCol) === 2 && row === lastMove.toRow) {
+            if (lastMove.toCol === 6 && col === 5) { // Enroque corto: Torre se mueve de 7 a 5
+              animateThisPiece = true;
+              const fromJ = boardFlipped ? 7 - 7 : 7;
+              const toJ = boardFlipped ? 7 - 5 : 5;
+              deltaJ = fromJ - toJ;
+              deltaI = 0;
+            } else if (lastMove.toCol === 2 && col === 3) { // Enroque largo: Torre se mueve de 0 a 3
+              animateThisPiece = true;
+              const fromJ = boardFlipped ? 7 - 0 : 0;
+              const toJ = boardFlipped ? 7 - 3 : 3;
+              deltaJ = fromJ - toJ;
+              deltaI = 0;
+            }
+          }
+        }
+
+        if (animateThisPiece) {
+          // Posicionar la pieza en la casilla origen inmediatamente antes de que el navegador pinte
+          pieceElement.style.transform = `translate(${deltaJ * 100}%, ${deltaI * 100}%)`;
+          pieceElement.style.transition = 'none';
+          pieceElement.style.zIndex = '999';
+
+          // Disparar la transición en frames consecutivos para asegurar que se registre el transform inicial
+          requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+              pieceElement.style.transition = 'transform 280ms cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+              pieceElement.style.transform = 'translate(0, 0)';
+              setTimeout(() => {
+                pieceElement.style.zIndex = '';
+                pieceElement.style.transition = '';
+                pieceElement.style.transform = '';
+              }, 280);
+            });
+          });
+        }
+
         square.appendChild(pieceElement);
       }
       board.appendChild(square);
@@ -64,10 +130,6 @@ function createBoard() {
   }
 
   updateBoard();
-  
-  if (typeof animateLastMove === 'function') {
-    animateLastMove();
-  }
 }
 
 function updateBoard() {
@@ -730,83 +792,47 @@ function hideReportModal() {
   if (modal) modal.classList.remove('active');
 }
 
-function animateLastMove() {
-  if (typeof gameState === 'undefined' || !gameState.lastMove) return;
-  
-  const lastMove = gameState.lastMove;
-  const fromRow = lastMove.fromRow;
-  const fromCol = lastMove.fromCol;
-  const toRow = lastMove.toRow;
-  const toCol = lastMove.toCol;
-  
-  // 1. Añadir el glow de la casilla destino
-  const toSquare = document.querySelector(`.square[data-row="${toRow}"][data-col="${toCol}"]`);
-  if (toSquare) {
-    toSquare.classList.add('landing-glow');
-  }
-  
-  // 2. Animar la pieza principal del movimiento
-  if (toSquare) {
-    const piece = toSquare.querySelector('.piece');
-    const fromSquare = document.querySelector(`.square[data-row="${fromRow}"][data-col="${fromCol}"]`);
-    if (piece && fromSquare) {
-      animatePieceTransition(piece, fromSquare, toSquare);
-    }
-  }
-  
-  // 3. Detectar y animar enroque (movimiento secundario de la torre)
-  if (typeof currentBoard !== 'undefined') {
-    const targetPiece = currentBoard[toRow][toCol];
-    const isKing = targetPiece === '♔' || targetPiece === '♚';
-    if (isKing && Math.abs(toCol - fromCol) === 2) {
-      let rookFromCol, rookToCol;
-      if (toCol === 6) { // Enroque corto
-        rookFromCol = 7;
-        rookToCol = 5;
-      } else if (toCol === 2) { // Enroque largo
-        rookFromCol = 0;
-        rookToCol = 3;
-      }
+function playMoveSound(isCapture = false) {
+  try {
+    const AudioContext = window.AudioContext || window.webkitAudioContext;
+    if (!AudioContext) return;
+    
+    const ctx = new AudioContext();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    
+    const now = ctx.currentTime;
+    
+    if (isCapture) {
+      // Captura: sonido metálico de impacto
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(440, now);
+      osc.frequency.exponentialRampToValueAtTime(100, now + 0.15);
       
-      if (rookFromCol !== undefined) {
-        const rookToSquare = document.querySelector(`.square[data-row="${toRow}"][data-col="${rookToCol}"]`);
-        const rookFromSquare = document.querySelector(`.square[data-row="${toRow}"][data-col="${rookFromCol}"]`);
-        if (rookToSquare && rookFromSquare) {
-          const rookPiece = rookToSquare.querySelector('.piece');
-          if (rookPiece) {
-            animatePieceTransition(rookPiece, rookFromSquare, rookToSquare);
-          }
-        }
-      }
+      gain.gain.setValueAtTime(0.15, now);
+      gain.gain.exponentialRampToValueAtTime(0.01, now + 0.15);
+      
+      osc.start(now);
+      osc.stop(now + 0.15);
+    } else {
+      // Movimiento estándar: click limpio y sutil
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(600, now);
+      osc.frequency.exponentialRampToValueAtTime(300, now + 0.08);
+      
+      gain.gain.setValueAtTime(0.1, now);
+      gain.gain.exponentialRampToValueAtTime(0.01, now + 0.08);
+      
+      osc.start(now);
+      osc.stop(now + 0.08);
     }
+  } catch (e) {
+    console.warn('AudioContext no permitido o soportado:', e);
   }
 }
 
-function animatePieceTransition(pieceElement, fromSquare, toSquare) {
-  const fromRect = fromSquare.getBoundingClientRect();
-  const toRect = toSquare.getBoundingClientRect();
-  
-  const deltaX = fromRect.left - toRect.left;
-  const deltaY = fromRect.top - toRect.top;
-  
-  // Posicionar la pieza en el origen de forma síncrona sin transiciones
-  pieceElement.style.transition = 'none';
-  pieceElement.style.transform = `translate(${deltaX}px, ${deltaY}px)`;
-  pieceElement.style.zIndex = '999'; // Traer al frente durante el desplazamiento
-  
-  // Forzar reflujo/layout para registrar la posición original
-  pieceElement.offsetHeight; 
-  
-  // Ejecutar el traslado en el siguiente frame
-  requestAnimationFrame(() => {
-    pieceElement.style.transition = 'transform 280ms cubic-bezier(0.25, 0.46, 0.45, 0.94)';
-    pieceElement.style.transform = 'translate(0, 0)';
-    
-    // Limpiar estilos inline una vez finalizado el desplazamiento
-    setTimeout(() => {
-      pieceElement.style.zIndex = '';
-      pieceElement.style.transition = '';
-      pieceElement.style.transform = '';
-    }, 280);
-  });
-}
+// Exponer funciones globales
+window.playMoveSound = playMoveSound;
