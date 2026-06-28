@@ -64,6 +64,10 @@ function createBoard() {
   }
 
   updateBoard();
+  
+  if (typeof animateLastMove === 'function') {
+    animateLastMove();
+  }
 }
 
 function updateBoard() {
@@ -748,4 +752,85 @@ function showReportModal() {
 function hideReportModal() {
   const modal = document.getElementById('report-modal');
   if (modal) modal.classList.remove('active');
+}
+
+function animateLastMove() {
+  if (typeof gameState === 'undefined' || !gameState.lastMove) return;
+  
+  const lastMove = gameState.lastMove;
+  const fromRow = lastMove.fromRow;
+  const fromCol = lastMove.fromCol;
+  const toRow = lastMove.toRow;
+  const toCol = lastMove.toCol;
+  
+  // 1. Añadir el glow de la casilla destino
+  const toSquare = document.querySelector(`.square[data-row="${toRow}"][data-col="${toCol}"]`);
+  if (toSquare) {
+    toSquare.classList.add('landing-glow');
+  }
+  
+  // 2. Animar la pieza principal del movimiento
+  if (toSquare) {
+    const piece = toSquare.querySelector('.piece');
+    const fromSquare = document.querySelector(`.square[data-row="${fromRow}"][data-col="${fromCol}"]`);
+    if (piece && fromSquare) {
+      animatePieceTransition(piece, fromSquare, toSquare);
+    }
+  }
+  
+  // 3. Detectar y animar enroque (movimiento secundario de la torre)
+  if (typeof currentBoard !== 'undefined') {
+    const targetPiece = currentBoard[toRow][toCol];
+    const isKing = targetPiece === '♔' || targetPiece === '♚';
+    if (isKing && Math.abs(toCol - fromCol) === 2) {
+      let rookFromCol, rookToCol;
+      if (toCol === 6) { // Enroque corto
+        rookFromCol = 7;
+        rookToCol = 5;
+      } else if (toCol === 2) { // Enroque largo
+        rookFromCol = 0;
+        rookToCol = 3;
+      }
+      
+      if (rookFromCol !== undefined) {
+        const rookToSquare = document.querySelector(`.square[data-row="${toRow}"][data-col="${rookToCol}"]`);
+        const rookFromSquare = document.querySelector(`.square[data-row="${toRow}"][data-col="${rookFromCol}"]`);
+        if (rookToSquare && rookFromSquare) {
+          const rookPiece = rookToSquare.querySelector('.piece');
+          if (rookPiece) {
+            animatePieceTransition(rookPiece, rookFromSquare, rookToSquare);
+          }
+        }
+      }
+    }
+  }
+}
+
+function animatePieceTransition(pieceElement, fromSquare, toSquare) {
+  const fromRect = fromSquare.getBoundingClientRect();
+  const toRect = toSquare.getBoundingClientRect();
+  
+  const deltaX = fromRect.left - toRect.left;
+  const deltaY = fromRect.top - toRect.top;
+  
+  // Posicionar la pieza en el origen de forma síncrona sin transiciones
+  pieceElement.style.transition = 'none';
+  pieceElement.style.transform = `translate(${deltaX}px, ${deltaY}px)`;
+  pieceElement.style.zIndex = '999'; // Traer al frente durante el desplazamiento
+  
+  // Forzar reflujo/layout para registrar la posición original
+  pieceElement.offsetHeight; 
+  
+  // Ejecutar el traslado en el siguiente frame
+  requestAnimationFrame(() => {
+    pieceElement.style.transition = 'transform 280ms cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+    pieceElement.style.transform = 'translate(0, 0)';
+    
+    // Limpiar estilos inline una vez finalizado el desplazamiento
+    setTimeout(() => {
+      pieceElement.style.zIndex = '';
+      pieceElement.style.transition = '';
+      pieceElement.style.transform = '';
+    }, 280);
+  });
 }
