@@ -10,6 +10,7 @@ const filesToCopy = [
   'play.html',
   'tutorial.html',
   'privacidad.html',
+  'soporte.html',
   'styles.css',
   'favicon.png',
   'sitemap.xml',

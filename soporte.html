@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Soporte y Eliminación de Cuenta | NEON CHESS</title>
+    <meta name="description" content="Centro de soporte oficial de NEON CHESS. Solicita la eliminación de tu cuenta, restablecimiento de datos y soporte técnico." />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="https://neon-chess.com/soporte.html" />
+    <link rel="icon" type="image/png" href="favicon.png" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Jersey+10&family=Orbitron:wght@400;700&display=swap" rel="stylesheet" />
+    
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      body { 
+        font-family: 'Orbitron', "Segoe UI", sans-serif; 
+        background: #0a0a14; 
+        color: #fff; 
+        line-height: 1.8; 
+      }
+      
+      .header { 
+        background: linear-gradient(135deg, #15002b 0%, #05050f 100%); 
+        padding: 50px 20px; 
+        text-align: center; 
+        border-bottom: 2px solid rgba(0, 255, 255, 0.3); 
+        box-shadow: 0 5px 25px rgba(0, 255, 255, 0.1);
+      }
+      .logo { 
+        font-size: 2.8rem; 
+        font-family: "Jersey 10", monospace; 
+        color: #fff; 
+        text-decoration: none; 
+        text-shadow: 0 0 10px #ff00ff, 0 0 20px #ff00ff, 0 0 30px #ff00ff; 
+        display: inline-block; 
+        margin-bottom: 15px; 
+        letter-spacing: 2px;
+      }
+      .header h1 { 
+        font-size: clamp(1.4rem, 4vw, 2.2rem); 
+        color: #00ffff; 
+        text-shadow: 0 0 15px rgba(0, 255, 255, 0.6); 
+        margin-bottom: 10px; 
+      }
+      .header p { 
+        color: #888; 
+        max-width: 600px; 
+        margin: 0 auto; 
+        font-size: 0.9rem;
+      }
+      
+      .nav-links { 
+        display: flex; 
+        justify-content: center; 
+        gap: 20px; 
+        flex-wrap: wrap; 
+        margin-top: 25px; 
+      }
+      .nav-links a { 
+        color: #00ffff; 
+        text-decoration: none; 
+        padding: 8px 20px; 
+        border: 1px solid #00ffff; 
+        border-radius: 20px; 
+        transition: all 0.3s; 
+        font-size: 0.85rem; 
+        background: rgba(0, 255, 255, 0.02);
+      }
+      .nav-links a:hover { 
+        background: rgba(0, 255, 255, 0.15); 
+        box-shadow: 0 0 15px rgba(0, 255, 255, 0.4); 
+      }
+      
+      main { 
+        max-width: 750px; 
+        margin: 40px auto; 
+        padding: 20px; 
+      }
+      
+      .section { 
+        margin-bottom: 30px; 
+        padding: 35px; 
+        background: rgba(13, 13, 26, 0.8); 
+        border: 1px solid rgba(255, 0, 255, 0.25); 
+        border-radius: 16px; 
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+      }
+      
+      .section h2 { 
+        font-size: 1.3rem; 
+        color: #ff00ff; 
+        text-shadow: 0 0 10px rgba(255, 0, 255, 0.4); 
+        margin-bottom: 20px; 
+        border-bottom: 1px solid rgba(255, 0, 255, 0.2); 
+        padding-bottom: 10px;
+      }
+      
+      .section p { 
+        color: #ccc; 
+        margin-bottom: 15px; 
+        font-size: 0.95rem;
+      }
+      
+      .warning-box { 
+        background: rgba(255, 0, 0, 0.05); 
+        border-left: 4px solid #ff3333; 
+        padding: 15px 20px; 
+        margin-bottom: 25px; 
+        border-radius: 0 8px 8px 0;
+      }
+      .warning-box h3 { 
+        color: #ff3333; 
+        font-size: 1rem; 
+        margin-bottom: 5px; 
+      }
+      .warning-box p { 
+        color: #e5b3b3; 
+        margin: 0; 
+        font-size: 0.88rem;
+      }
+      
+      .form-group { 
+        margin-bottom: 20px; 
+      }
+      
+      label { 
+        display: block; 
+        color: #00ffff; 
+        margin-bottom: 8px; 
+        font-size: 0.9rem; 
+        font-weight: bold;
+      }
+      
+      input[type="email"], select, textarea { 
+        width: 100%; 
+        padding: 12px; 
+        background: rgba(0, 0, 0, 0.5); 
+        border: 1px solid rgba(0, 255, 255, 0.3); 
+        border-radius: 8px; 
+        color: #fff; 
+        font-family: 'Orbitron', sans-serif; 
+        font-size: 0.95rem;
+        outline: none; 
+        transition: all 0.3s;
+      }
+      input[type="email"]:focus, select:focus, textarea:focus { 
+        border-color: #ff00ff; 
+        box-shadow: 0 0 10px rgba(255, 0, 255, 0.3); 
+      }
+      
+      .checkbox-group { 
+        display: flex; 
+        align-items: flex-start; 
+        gap: 12px; 
+        margin: 25px 0; 
+        cursor: pointer;
+      }
+      .checkbox-group input { 
+        margin-top: 5px; 
+        transform: scale(1.2); 
+        accent-color: #ff00ff;
+      }
+      .checkbox-group label { 
+        color: #ccc; 
+        font-size: 0.85rem; 
+        font-weight: normal; 
+        line-height: 1.5;
+        user-select: none;
+      }
+      
+      .btn-submit { 
+        width: 100%; 
+        padding: 15px; 
+        background: linear-gradient(45deg, #ff00ff, #00ffff); 
+        color: #fff; 
+        border: none; 
+        border-radius: 8px; 
+        font-family: 'Orbitron', sans-serif; 
+        font-weight: bold; 
+        font-size: 1rem; 
+        cursor: pointer; 
+        box-shadow: 0 0 15px rgba(255, 0, 255, 0.4); 
+        transition: all 0.3s;
+      }
+      .btn-submit:hover { 
+        transform: translateY(-2px); 
+        box-shadow: 0 0 25px rgba(255, 0, 255, 0.7); 
+      }
+      .btn-submit:disabled { 
+        background: #333; 
+        box-shadow: none; 
+        cursor: not-allowed; 
+        transform: none; 
+        color: #666;
+      }
+      
+      /* Mensaje de Éxito / Confirmación */
+      .success-card { 
+        display: none; 
+        padding: 35px; 
+        background: rgba(13, 13, 26, 0.95); 
+        border: 2px solid #00ffff; 
+        border-radius: 16px; 
+        box-shadow: 0 0 30px rgba(0, 255, 255, 0.3); 
+        text-align: center;
+        animation: fadeIn 0.5s ease;
+      }
+      .success-card h2 { 
+        color: #00ffff; 
+        margin-bottom: 15px; 
+        text-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+      }
+      .success-card p { 
+        color: #ccc; 
+        margin-bottom: 25px; 
+        font-size: 0.95rem;
+      }
+      .btn-email-confirm { 
+        display: inline-block; 
+        padding: 15px 30px; 
+        background: #ff00ff; 
+        color: #fff; 
+        text-decoration: none; 
+        border-radius: 8px; 
+        font-weight: bold; 
+        box-shadow: 0 0 15px rgba(255, 0, 255, 0.5);
+        transition: all 0.3s;
+      }
+      .btn-email-confirm:hover { 
+        background: #ff33ff; 
+        box-shadow: 0 0 25px rgba(255, 0, 255, 0.8); 
+        transform: scale(1.03);
+      }
+
+      @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+      
+      footer { 
+        background: #05050f; 
+        padding: 40px 20px; 
+        text-align: center; 
+        border-top: 1px solid rgba(255, 0, 255, 0.2); 
+      }
+      footer a { 
+        color: #ff00ff; 
+        text-decoration: none; 
+        margin: 0 15px; 
+        font-size: 0.85rem;
+      }
+      footer a:hover { 
+        text-shadow: 0 0 10px #ff00ff; 
+      }
+      footer p { 
+        color: #555; 
+        margin-top: 20px; 
+        font-size: 0.8rem;
+      }
+    </style>
+  </head>
+  <body>
+    <header class="header">
+      <a href="index.html" class="logo">NEON CHESS</a>
+      <h1>Centro de Soporte</h1>
+      <p>Gestión de Cuentas y Solicitud de Borrado de Datos</p>
+      <nav class="nav-links">
+        <a href="index.html">Inicio</a>
+        <a href="play.html">Jugar</a>
+        <a href="tutorial.html">Tutorial</a>
+        <a href="privacidad.html">Privacidad</a>
+      </nav>
+    </header>
+
+    <main>
+      <div class="success-card" id="success-message">
+        <h2>¡Solicitud Registrada Temporalmente!</h2>
+        <p>Para que procesemos tu solicitud de borrado de forma válida, necesitamos verificar tu identidad. Por favor, haz clic en el botón de abajo para enviar el correo pre-redactado desde tu buzón de correo electrónico registrado.</p>
+        <a href="#" id="mailto-btn" class="btn-email-confirm">ENVIAR CORREO DE CONFIRMACIÓN</a>
+      </div>
+
+      <div class="section" id="form-section">
+        <h2>Solicitud de Eliminación de Datos</h2>
+        <p>Conforme al Reglamento General de Protección de Datos (RGPD) y las directrices de Google Play Store, puedes solicitar la eliminación permanente de tu cuenta de Neon Chess y todo su historial.</p>
+        
+        <div class="warning-box">
+          <h3>¡Advertencia Importante!</h3>
+          <p>Esta acción es irreversible. Al borrar tu cuenta, perderás de forma definitiva tu puntuación ELO, historial de victorias, derrotas, estadísticas de perfil y tu nombre de usuario reservado. No se podrá recuperar bajo ninguna circunstancia.</p>
+        </div>
+
+        <form id="deletion-form" onsubmit="handleSubmit(event)">
+          <div class="form-group">
+            <label for="user-email">Correo Electrónico Registrado</label>
+            <input type="email" id="user-email" required placeholder="tu-correo@gmail.com" />
+          </div>
+
+          <div class="form-group">
+            <label for="reason-select">Motivo de la Solicitud (Opcional)</label>
+            <select id="reason-select">
+              <option value="no-longer-play">Ya no juego a Neon Chess</option>
+              <option value="privacy-concerns">Preocupaciones de privacidad</option>
+              <option value="create-new-account">Quiero crear una cuenta nueva desde cero</option>
+              <option value="other">Otro motivo</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="details-text">Detalles Adicionales</label>
+            <textarea id="details-text" rows="3" placeholder="Comentarios o especificaciones sobre tu solicitud..."></textarea>
+          </div>
+
+          <div class="checkbox-group" onclick="toggleCheckbox()">
+            <input type="checkbox" id="confirm-check" required />
+            <label for="confirm-check">
+              Confirmo que deseo borrar de forma permanente mi cuenta de Neon Chess y todos los datos asociados, y entiendo que esta acción es totalmente irreversible.
+            </label>
+          </div>
+
+          <button type="submit" class="btn-submit" id="submit-btn">SOLICITAR BORRADO DE DATOS</button>
+        </form>
+      </div>
+    </main>
+
+    <script>
+      function toggleCheckbox() {
+        const check = document.getElementById('confirm-check');
+        // El click nativo en la caja o label ya maneja el estado, pero esto asegura la alternancia
+      }
+
+      function handleSubmit(event) {
+        event.preventDefault();
+        
+        const email = document.getElementById('user-email').value;
+        const reason = document.getElementById('reason-select').value;
+        const details = document.getElementById('details-text').value;
+        
+        // Crear cuerpo del correo pre-formateado
+        const subject = encodeURIComponent("Solicitud de Eliminación de Cuenta - Neon Chess");
+        const body = encodeURIComponent(
+          "Hola Soporte de Neon Chess,\n\n" +
+          "Solicito el borrado permanente de mi cuenta de juego y todos los datos asociados.\n\n" +
+          "Detalles de la Solicitud:\n" +
+          "- Correo de la cuenta: " + email + "\n" +
+          "- Motivo seleccionado: " + reason + "\n" +
+          "- Detalles adicionales: " + details + "\n\n" +
+          "Entiendo que este proceso es irreversible y resultará en la eliminación permanente de mi ELO y estadísticas de juego.\n\n" +
+          "Atentamente,\nUsuario de Neon Chess"
+        );
+        
+        const mailtoUrl = "mailto:soporte.neonchess@gmail.com?subject=" + subject + "&body=" + body;
+        
+        // Configurar botón
+        const mailtoBtn = document.getElementById('mailto-btn');
+        mailtoBtn.href = mailtoUrl;
+        
+        // Intercambiar pantallas con animación
+        document.getElementById('form-section').style.display = 'none';
+        const successCard = document.getElementById('success-message');
+        successCard.style.display = 'block';
+        
+        // Redireccionar al correo también directamente
+        window.location.href = mailtoUrl;
+      }
+    </script>
+
+    <footer>
+      <nav>
+        <a href="index.html">Inicio</a>
+        <a href="play.html">Jugar</a>
+        <a href="tutorial.html">Tutorial</a>
+        <a href="privacidad.html">Privacidad</a>
+        <a href="soporte.html">Soporte</a>
+      </nav>
+      <p>&copy; 2026 NEON CHESS - Todos los derechos reservados.</p>
+    </footer>
+  </body>
+</html>
