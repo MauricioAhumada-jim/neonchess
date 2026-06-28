@@ -513,6 +513,45 @@
       </div>
     </div>
 
+    <!-- Modal de Enlace Neural Premium (Paywall) -->
+    <div class="modal" id="premium-modal">
+      <div class="modal-content text-center" style="border: 2px solid #ff00ff; box-shadow: 0 0 25px rgba(255, 0, 255, 0.4); max-width: 500px;">
+        <h2 style="color: #ff00ff; text-shadow: 0 0 15px #ff00ff; font-family: 'Orbitron', sans-serif; font-size: 1.6rem; margin-bottom: 15px;">ENLACE NEURAL PREMIUM</h2>
+        <p style="color: #ccc; margin-bottom: 20px; font-size: 0.95rem; line-height: 1.6;">Remueve todos los anuncios holográficos comerciales de por vida y desbloquea el flujo neural puro de Neon Chess.</p>
+        
+        <div class="premium-benefits" style="text-align: left; margin-bottom: 25px; padding: 15px; background: rgba(255, 0, 255, 0.04); border: 1px solid rgba(255, 0, 255, 0.2); border-radius: 8px;">
+          <div style="margin-bottom: 10px; display: flex; align-items: center; gap: 8px; color: #00ffff; font-size: 0.9rem;">
+            <span>⚡</span> <span>Sin publicidad de banners ni intersticiales.</span>
+          </div>
+          <div style="margin-bottom: 10px; display: flex; align-items: center; gap: 8px; color: #00ffff; font-size: 0.9rem;">
+            <span>⚡</span> <span>Soporte directo para la evolución del juego.</span>
+          </div>
+          <div style="display: flex; align-items: center; gap: 8px; color: #00ffff; font-size: 0.9rem;">
+            <span>⚡</span> <span>Acceso premium ilimitado garantizado para siempre.</span>
+          </div>
+        </div>
+
+        <div class="product-price-tag" style="font-size: 1.8rem; font-weight: bold; color: #fff; text-shadow: 0 0 10px #00ffff; margin-bottom: 25px; font-family: 'Orbitron', monospace;">
+          $2.99 USD
+        </div>
+
+        <button class="btn-submit" id="premium-buy-btn" onclick="premiumService.purchase()" style="background: linear-gradient(45deg, #ff00ff, #00ffff); box-shadow: 0 0 15px rgba(255, 0, 255, 0.6); margin-bottom: 12px; width: 100%; padding: 15px; font-family: 'Orbitron', sans-serif; font-weight: bold; border-radius: 8px; color: #fff; cursor: pointer; border: none;">ADQUIRIR ACCESO PREMIUM</button>
+        <button class="restore-btn" onclick="premiumService.restore()" style="background: none; border: 1px solid rgba(0, 255, 255, 0.3); color: #00ffff; width: 100%; padding: 12px; font-family: 'Orbitron', monospace; font-weight: bold; cursor: pointer; border-radius: 8px; margin-bottom: 12px; font-size: 0.9rem;">Restaurar Compras</button>
+        <button class="back-btn" onclick="premiumService.closePaywall()" style="background: none; border: 1px solid #444; color: #888; width: 100%; padding: 10px; font-family: 'Orbitron', monospace; cursor: pointer; border-radius: 8px; font-size: 0.85rem; margin-top: 0;">Volver al Menú</button>
+      </div>
+    </div>
+
+    <!-- Modal de Recordatorio Premium (Post-Intersticial) -->
+    <div class="modal" id="premium-prompt-modal">
+      <div class="modal-content text-center" style="border: 2px solid #00ffff; box-shadow: 0 0 25px rgba(0, 255, 255, 0.4); max-width: 480px;">
+        <h2 style="color: #00ffff; text-shadow: 0 0 12px #00ffff; font-family: 'Orbitron', sans-serif; font-size: 1.5rem; margin-bottom: 15px;">¿Cansado de la Publicidad?</h2>
+        <p style="color: #ccc; margin-bottom: 25px; font-size: 0.95rem; line-height: 1.6;">Elimina todos los implantes comerciales y anuncios de Neon Chess de por vida por solo $2.99 USD.</p>
+        
+        <button class="btn-submit" onclick="premiumService.closePrompt(true)" style="background: linear-gradient(45deg, #ff00ff, #00ffff); box-shadow: 0 0 15px rgba(255, 0, 255, 0.5); margin-bottom: 12px; width: 100%; padding: 14px; font-family: 'Orbitron', sans-serif; font-weight: bold; border-radius: 8px; color: #fff; cursor: pointer; border: none;">ELIMINAR ANUNCIOS DE POR VIDA</button>
+        <button class="back-btn" onclick="premiumService.closePrompt(false)" style="background: none; border: 1px solid #444; color: #888; width: 100%; padding: 10px; font-family: 'Orbitron', monospace; cursor: pointer; border-radius: 8px; font-size: 0.85rem; margin-top: 0;">Seguir con Anuncios</button>
+      </div>
+    </div>
+
     <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-database-compat.js"></script>
@@ -527,6 +566,7 @@
     <script src="js/chess-logic.js"></script>
     <script src="js/ai.js"></script>
     <script src="js/ui-controller.js"></script>
+    <script src="js/premium-service.js"></script>
     <script src="js/admob-simulation.js"></script>
     <script src="js/main.js"></script>
   </body>

@@ -3809,5 +3809,35 @@ body::before {
   animation: square-glow 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
 }
 
+/* Modales Premium e Interfaces de Pago */
+#premium-modal .premium-benefits div {
+  font-family: "Orbitron", monospace;
+  letter-spacing: 0.5px;
+}
+
+#premium-modal .restore-btn {
+  transition: all 0.3s ease;
+}
+#premium-modal .restore-btn:hover {
+  background: rgba(0, 255, 255, 0.1) !important;
+  box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+}
+
+#premium-modal .btn-submit:disabled {
+  background: #333 !important;
+  box-shadow: none !important;
+  cursor: not-allowed !important;
+  color: #666 !important;
+}
+
+#premium-prompt-modal .btn-submit {
+  transition: all 0.3s ease;
+}
+#premium-prompt-modal .btn-submit:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 25px rgba(255, 0, 255, 0.8) !important;
+}
+
+
 
 

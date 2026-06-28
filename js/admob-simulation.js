@@ -161,6 +161,10 @@ const admobService = (function() {
 
   // Mostrar el banner en la parte inferior
   function showBanner(menuName) {
+    if (window.isPremiumUser) {
+      hideBanner();
+      return;
+    }
     init(); // Asegurar que existe en el DOM
     
     const banner = document.getElementById('admob-sim-banner');
@@ -194,6 +198,10 @@ const admobService = (function() {
 
   // Mostrar el anuncio intersticial de pantalla completa
   function showInterstitial(callback) {
+    if (window.isPremiumUser) {
+      if (callback) callback();
+      return;
+    }
     init(); // Asegurar que existe en el DOM
 
     activeCallback = callback;
@@ -287,11 +295,15 @@ const admobService = (function() {
       countdownInterval = null;
     }
 
-    // Ejecutar el callback guardado
+    // Mostrar recordatorio de eliminación de publicidad si no es premium
     if (activeCallback) {
       const cb = activeCallback;
       activeCallback = null;
-      cb();
+      if (typeof premiumService !== 'undefined' && !window.isPremiumUser) {
+        premiumService.showPrompt(cb);
+      } else {
+        cb();
+      }
     }
   }
 
