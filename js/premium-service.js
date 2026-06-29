@@ -296,9 +296,10 @@ const premiumService = (function() {
   };
 })();
 
-// Exponer globalmente e inicializar al cargar el script
+// Carga sincrónica del estado premium local para evitar parpadeos y desincronización en el arranque
 window.premiumService = premiumService;
-window.isPremiumUser = false;
+window.isPremiumUser = (typeof localStorage !== 'undefined' && localStorage.getItem('neon_premium_user') === 'true');
+
 document.addEventListener('DOMContentLoaded', () => {
   premiumService.init();
 });
