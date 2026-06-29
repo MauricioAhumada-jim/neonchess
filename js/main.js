@@ -164,10 +164,14 @@ function updateControlButtons(isOnline = null) {
 function backToMainMenu() {
   hideLobbyModal();
   hideGameModeModal();
-  const gm = document.getElementById('game-mode-modal');
-  if (gm) {
-    gm.classList.remove('hidden');
-    gm.style.display = 'flex';
+  if (typeof showGameModeModal === 'function') {
+    showGameModeModal();
+  } else {
+    const gm = document.getElementById('game-mode-modal');
+    if (gm) {
+      gm.classList.remove('hidden');
+      gm.style.display = 'flex';
+    }
   }
 }
 
